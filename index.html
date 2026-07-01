@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lima & Bonfá — WorkFlow MES</title>
+    <title>Lima & Bonfá — WorkFlow</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -16,7 +16,6 @@
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
 
-        /* Icon system */
         .ic { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.18em; flex-shrink: 0; }
         .ic.fill { fill: currentColor; stroke: none; }
 
@@ -48,15 +47,13 @@
         .hd-left { display: flex; align-items: center; gap: 14px; }
         .hd-logo { background: white; border-radius: 9px; padding: 5px 11px; display: flex; align-items: center; }
         .hd-logo img { height: 30px; width: auto; display: block; }
-        .hd-titles { }
-        .hd-title { font-size: 16px; font-weight: 700; letter-spacing: .2px; }
-        .hd-sub { font-size: 10.5px; opacity: .82; margin-top: 1px; }
+        .hd-title { font-size: 22px; font-weight: 700; letter-spacing: .2px; }
         .hd-right { display: flex; align-items: center; gap: 9px; }
         .chip { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 7px; }
         .chip.os { background: white; color: var(--blue-dark); border: none; font-size: 13.5px; letter-spacing: .3px; font-weight: 700; }
         .chip.os.empty { background: rgba(255,255,255,.16); color: rgba(255,255,255,.75); }
-        .chip .logout { cursor: pointer; opacity: .7; display: inline-flex; margin-left: 3px; }
-        .chip .logout:hover { opacity: 1; }
+        .chip.clickable { cursor: pointer; transition: background .15s; }
+        .chip.clickable:hover { background: rgba(255,255,255,.28); }
         .pulse-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #5EF38D; box-shadow: 0 0 0 0 rgba(94,243,141,.6); animation: pulse 2s infinite; }
         @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(94,243,141,.5)} 70%{box-shadow:0 0 0 6px rgba(94,243,141,0)} 100%{box-shadow:0 0 0 0 rgba(94,243,141,0)} }
 
@@ -76,15 +73,20 @@
         .lb-suggest b { color: var(--blue); cursor: pointer; text-decoration: underline; }
 
         /* ═══ TIME / DOWNTIME STRIP ═══ */
-        .time-strip { background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; }
+        .time-strip { background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 18px; display: flex; align-items: center; gap: 0; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; }
         body.locked .time-strip { display: none; }
+        .ts-info { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
         .ts-block { display: flex; flex-direction: column; gap: 1px; }
         .ts-label { font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-faint); font-weight: 700; white-space: nowrap; }
         .ts-value { font-size: 16px; font-weight: 700; line-height: 1.1; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
         .ts-value.timer { color: var(--blue); font-size: 19px; }
         .state-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .ts-divider { width: 1px; height: 32px; background: var(--border); }
-        .ts-btns { margin-left: auto; display: flex; gap: 7px; }
+        .ts-divider { width: 1px; height: 32px; background: var(--border); margin: 0 14px; }
+        .ts-piece-counter { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .ts-pc-box { background: linear-gradient(135deg, var(--blue), var(--teal-dark)); color: white; padding: 6px 28px; border-radius: 12px; text-align: center; box-shadow: 0 3px 12px rgba(21,101,192,.25); }
+        .ts-pc-val { font-size: 26px; font-weight: 800; line-height: 1.15; }
+        .ts-pc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; font-weight: 600; }
+        .ts-btns { flex-shrink: 0; display: flex; gap: 7px; }
         .btn { padding: 9px 15px; border: none; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 7px; font-family: inherit; white-space: nowrap; }
         .btn:active { transform: scale(.97); }
         .btn-run { background: var(--green-bg); color: #15803D; border: 1.5px solid #86E0AB; }
@@ -117,7 +119,7 @@
         .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
         .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
         .tab-panel.active { display: flex; }
-        .op-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
+        .op-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1.8fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
         .panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .ph { background: #F7F9FC; color: var(--blue-dark); padding: 10px 15px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 1px solid var(--border); }
         .ph-l { display: flex; align-items: center; gap: 8px; }
@@ -134,27 +136,17 @@
         .doc-nav button { padding: 5px 15px; border: 1px solid var(--border); background: white; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text); transition: all .15s; }
         .doc-nav button:hover { background: var(--blue); color: white; border-color: var(--blue); }
         .page-pill { background: var(--graphite); color: white; padding: 5px 15px; border-radius: 7px; font-size: 12px; font-weight: 700; }
-        .setup-photo-box { background: linear-gradient(135deg, var(--blue-deep), var(--teal-dark)); border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.85); position: relative; margin-bottom: 11px; overflow: hidden; cursor: pointer; }
-        .setup-photo-box .ic { width: 48px; height: 48px; stroke-width: 1.5; }
-        .setup-photo-box:hover { filter: brightness(1.08); }
-        .photo-label { position: absolute; bottom: 9px; right: 9px; background: rgba(0,0,0,.5); color: white; font-size: 10.5px; padding: 4px 9px; border-radius: 5px; display: flex; align-items: center; gap: 5px; }
         .comment-card { background: var(--yellow-bg); border: 1px solid #F5D78E; border-left: 4px solid var(--yellow); border-radius: 0 10px 10px 0; padding: 11px 13px; font-size: 12.5px; line-height: 1.7; color: #5A4100; }
         .comment-card .ctitle { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #B45309; letter-spacing: .5px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
         .comment-card strong { color: #7A3E00; }
-        .drawing-wrap { height: 100%; display: flex; align-items: center; justify-content: center; background: #FBFCFE; border-radius: 8px; }
-        .drawing-wrap svg { max-width: 100%; max-height: 100%; }
-        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; padding: 12px; }
-        .sup-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 15px 10px; background: #F7F9FC; border-radius: 11px; cursor: pointer; transition: all .18s; border: 1.5px solid var(--border); position: relative; }
-        .sup-btn:hover { background: white; border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,180,200,.18); }
+        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px; align-content: center; }
+        .sup-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 14px; background: #F7F9FC; border-radius: 14px; cursor: pointer; transition: all .18s; border: 2px solid var(--border); position: relative; }
+        .sup-btn:hover { background: white; border-color: var(--teal); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,180,200,.2); }
         .sup-icon { color: var(--blue); display: flex; }
-        .sup-icon .ic { width: 28px; height: 28px; stroke-width: 1.7; }
-        .sup-label { font-size: 13px; font-weight: 700; color: var(--text); }
-        .sup-status { font-size: 10px; color: var(--text-soft); }
+        .sup-icon .ic { width: 36px; height: 36px; stroke-width: 1.6; }
+        .sup-label { font-size: 15px; font-weight: 700; color: var(--text); }
+        .sup-status { font-size: 11px; color: var(--text-soft); }
         .sup-badge { position: absolute; top: 9px; right: 9px; background: var(--red); color: white; border-radius: 50%; width: 21px; height: 21px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(239,68,68,.4); }
-        .counter-bar { background: #F7F9FC; padding: 11px 15px; display: flex; align-items: center; justify-content: space-around; flex-shrink: 0; border-top: 1px solid var(--border); }
-        .c-label { font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
-        .c-val { font-size: 22px; font-weight: 800; color: var(--green); line-height: 1.1; }
-        .c-sub { font-size: 12px; color: var(--text-soft); font-weight: 600; }
         .mag-layout { display: grid; grid-template-columns: 300px 1fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
         .lib-panel, .mac-panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .lib-head { background: #F7F9FC; color: var(--blue-dark); padding: 12px 15px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; }
@@ -251,11 +243,7 @@
 
         /* ═══ MOBILE RESPONSIVE (≤767px) ═══ */
         @media (max-width: 767px) {
-
-            /* 1 — Body: permitir scroll vertical */
             body { height: auto; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
-
-            /* 2 — Áreas de conteúdo: expandir pelo conteúdo */
             .content { flex: none; overflow: visible; }
             .tab-panel { flex: none; overflow: visible; }
             .tab-panel.active { display: block; }
@@ -266,66 +254,41 @@
             .insp-pb { flex: none; overflow-x: auto; overflow-y: visible; }
             .mag-grid { flex: none; overflow: visible; }
             .doc-box { height: auto; min-height: 140px; }
-            .drawing-wrap { height: auto; min-height: 180px; }
-
-            /* 3 — Header */
             .header { padding: 6px 10px; height: auto; min-height: 52px; flex-wrap: wrap; gap: 4px; }
-            .hd-sub { display: none; }
             .hd-logo { padding: 3px 7px; }
             .hd-logo img { height: 22px; }
-            .hd-title { font-size: 13px; }
+            .hd-title { font-size: 16px; }
             .hd-left { gap: 7px; }
             .hd-right { gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
             .chip { font-size: 10.5px; padding: 4px 8px; }
             #hdOperator { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-            /* 4 — Login card */
             .login-card { width: calc(100% - 32px); max-width: 430px; padding: 32px 20px 24px; }
-
-            /* 5 — Load bar: wrap */
             .load-bar { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
             .lb-texts { width: 100%; }
             .lb-input { flex: 1; width: auto; min-width: 80px; }
             .lb-load-btn { flex: 1; justify-content: center; }
             .lb-suggest { margin-left: 0; width: 100%; text-align: center; }
-
-            /* 6 — Time strip: wrap + botões 2×2 */
-            .time-strip { flex-wrap: wrap; gap: 6px 14px; padding: 10px 12px; }
+            .time-strip { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+            .ts-info { flex-wrap: wrap; gap: 6px 14px; }
             .ts-divider { display: none; }
+            .ts-piece-counter { width: 100%; order: -1; margin-bottom: 4px; }
             .ts-btns { margin-left: 0; width: 100%; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
             .btn { flex: 1 1 calc(50% - 3px); justify-content: center; font-size: 12px; padding: 10px 8px; }
-
-            /* 7 — Abas: scroll horizontal */
             .nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .nav::-webkit-scrollbar { display: none; }
             .tab { white-space: nowrap; padding: 11px 14px; }
-
-            /* 8 — OP Grid: coluna única */
             .op-grid { grid-template-columns: 1fr; grid-template-rows: auto; flex: none; overflow: visible; height: auto; }
-
-            /* 9 — Magazine: coluna única */
             .mag-layout { grid-template-columns: 1fr; flex: none; overflow: visible; height: auto; }
             .mag-grid { grid-template-columns: repeat(4, 1fr); }
-
-            /* 10 — Inspeção: coluna única */
             .insp-layout { grid-template-columns: 1fr; flex: none; overflow: visible; height: auto; }
             .insp-table { min-width: 400px; }
             .freq-row { flex-wrap: wrap; gap: 6px; }
             .freq-table { min-width: 280px; }
-
-            /* 11 — Modais */
             .modal { width: calc(100vw - 32px); max-width: 430px; }
             .modal.wide { width: calc(100vw - 32px); max-width: 540px; }
             .reason-grid { grid-template-columns: 1fr; }
-
-            /* 12 — Barra de status */
             .sbar { flex-wrap: wrap; gap: 4px 14px; padding: 6px 12px; font-size: 10.5px; }
-
-            /* 13 — Toast */
             .toast { left: 16px; right: 16px; top: 16px; min-width: unset; }
-
-            /* 14 — Diversos */
-            .setup-photo-box { height: 120px; }
             .insp-actions { flex-direction: column; }
             .support-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -354,6 +317,7 @@
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19l16 0"/><path d="M4 15l4 -6l4 2l4 -5l4 4"/></symbol>
     <symbol id="i-server" viewBox="0 0 24 24"><path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v0a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"/><path d="M3 12m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v0a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"/><path d="M7 8v.01"/><path d="M7 16v.01"/></symbol>
     <symbol id="i-bit" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M9 3h6"/><path d="M10 21h4"/><path d="M9 7l6 0"/><path d="M9.5 11l5 0"/><path d="M10 15l4 0"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></symbol>
 </svg>
 
 <!-- ═══ LOGIN ═══ -->
@@ -361,7 +325,7 @@
     <div class="login-bg"></div>
     <div class="login-card">
         <div class="login-logo"><img src="logo.png" alt="Lima & Bonfá"></div>
-        <div class="login-sub">WorkFlow <span>MES</span></div>
+        <div class="login-sub">WorkFlow</div>
         <div class="login-label">Matrícula do Operador</div>
         <div class="login-input-wrap">
             <input class="login-input mono" id="matriculaInput" type="text" inputmode="numeric" placeholder="0000" maxlength="6" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
@@ -377,15 +341,12 @@
 <header class="header">
     <div class="hd-left">
         <div class="hd-logo"><img src="logo.png" alt="Lima & Bonfá"></div>
-        <div class="hd-titles">
-            <div class="hd-title">WorkFlow MES</div>
-            <div class="hd-sub">Execução de Manufatura · Mazak Variaxis 5 Eixos</div>
-        </div>
+        <div class="hd-title">WorkFlow</div>
+        <div class="chip os empty" id="hdOS">Sem O.S.</div>
     </div>
     <div class="hd-right">
-        <div class="chip"><span class="pulse-dot"></span><span id="hdOperator">—</span></div>
+        <div class="chip clickable" id="hdOperatorChip" onclick="openSwapModal()" title="Trocar operador"><span class="pulse-dot"></span><span id="hdOperator">—</span></div>
         <div class="chip"><svg class="ic"><use href="#i-gear"/></svg> MQ0281</div>
-        <div class="chip os empty" id="hdOS">Sem O.S. <span class="logout" onclick="logout()" title="Sair"><svg class="ic"><use href="#i-power"/></svg></span></div>
     </div>
 </header>
 
@@ -393,29 +354,37 @@
 <div class="load-bar" id="loadBar">
     <span class="lb-icon"><svg class="ic"><use href="#i-folder"/></svg></span>
     <div class="lb-texts">
-        <div class="lb-title">Carregar Ordem de Produção</div>
-        <div class="lb-desc">Digite o número da OP para liberar o painel</div>
+        <div class="lb-title">Carregar Orçamento</div>
+        <div class="lb-desc">Digite o número do orçamento para liberar o painel</div>
     </div>
-    <input class="lb-input mono" id="opInput" type="text" placeholder="OP nº" maxlength="8" onkeydown="if(event.key==='Enter')loadOP()">
-    <button class="lb-load-btn" onclick="loadOP()"><svg class="ic"><use href="#i-arrow"/></svg> Carregar Painel</button>
-    <div class="lb-suggest">OP disponível na fila: <b onclick="document.getElementById('opInput').value='108339';loadOP()">108339</b></div>
+    <input class="lb-input mono" id="orcInput" type="text" placeholder="Orçamento" maxlength="8" onkeydown="if(event.key==='Enter')loadBudget()">
+    <button class="lb-load-btn" onclick="loadBudget()"><svg class="ic"><use href="#i-arrow"/></svg> Carregar Painel</button>
+    <div class="lb-suggest">Orçamentos disponíveis: <b onclick="document.getElementById('orcInput').value='137715';loadBudget()">137715</b> · <b onclick="document.getElementById('orcInput').value='004120';loadBudget()">004120</b> · <b onclick="document.getElementById('orcInput').value='552515';loadBudget()">552515</b></div>
 </div>
 
 <!-- ═══ TIME / DOWNTIME STRIP ═══ -->
 <div class="time-strip" id="timeStrip">
-    <div class="ts-block">
-        <span class="ts-label">Status da Máquina</span>
-        <span class="ts-value mono" id="jobStatus" style="font-size:15px;color:var(--red);"><span class="state-dot" style="background:var(--red);"></span>Parada</span>
+    <div class="ts-info">
+        <div class="ts-block">
+            <span class="ts-label">Status da Máquina</span>
+            <span class="ts-value mono" id="jobStatus" style="font-size:15px;color:var(--red);"><span class="state-dot" style="background:var(--red);"></span>Parada</span>
+        </div>
+        <div class="ts-divider"></div>
+        <div class="ts-block"><span class="ts-label">Cronômetro</span><span class="ts-value timer mono" id="liveTimer">00:00:00</span></div>
+        <div class="ts-divider"></div>
+        <div class="ts-block"><span class="ts-label">Setup · Real / Padrão</span><span class="ts-value mono" id="setupCompare" style="font-size:15px;">— / —</span></div>
+        <div class="ts-divider"></div>
+        <div class="ts-block">
+            <span class="ts-label">Parada (Total)</span>
+            <span class="ts-value mono" id="downtimeTotal" style="font-size:15px;color:var(--red);">0min</span>
+            <span class="ts-label" id="downtimeReason" style="color:var(--text-soft);text-transform:none;font-size:9.5px;">—</span>
+        </div>
     </div>
-    <div class="ts-divider"></div>
-    <div class="ts-block"><span class="ts-label">Cronômetro</span><span class="ts-value timer mono" id="liveTimer">00:00:00</span></div>
-    <div class="ts-divider"></div>
-    <div class="ts-block"><span class="ts-label">Setup · Real / Padrão</span><span class="ts-value mono" id="setupCompare" style="font-size:15px;">— / 22min</span></div>
-    <div class="ts-divider"></div>
-    <div class="ts-block">
-        <span class="ts-label">Parada (Total)</span>
-        <span class="ts-value mono" id="downtimeTotal" style="font-size:15px;color:var(--red);">0min</span>
-        <span class="ts-label" id="downtimeReason" style="color:var(--text-soft);text-transform:none;font-size:9.5px;">—</span>
+    <div class="ts-piece-counter">
+        <div class="ts-pc-box">
+            <div class="ts-pc-val mono" id="pieceCountDisplay">0 / 0</div>
+            <div class="ts-pc-label">Peças Usinadas</div>
+        </div>
     </div>
     <div class="ts-btns">
         <button class="btn btn-run" id="runBtn" onclick="runMachine()"><svg class="ic fill"><use href="#i-play"/></svg> Rodar Máquina</button>
@@ -442,74 +411,51 @@
 <!-- TAB PROCESSO -->
 <div class="tab-panel active" id="tab-processo">
     <div class="op-grid">
+        <!-- PROCESSO / PN -->
         <div class="panel">
-            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-file"/></svg></span> Processo · PN</span><span class="ph-badge">S50-09057-009</span></div>
+            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-file"/></svg></span> Processo · PN</span><span class="ph-badge" id="pnBadge">—</span></div>
             <div class="pb" style="display:flex;flex-direction:column;gap:11px;">
-                <div class="doc-box" style="flex:1;">
+                <div class="doc-box" style="flex:1;" id="docBox">
                     <div class="doc-icon"><svg class="ic"><use href="#i-file"/></svg></div>
-                    <div class="doc-name">S50-09057-009 · Rev.000</div>
-                    <div class="doc-prod">SUPORTE PONTA 009 — MAZAK</div>
-                    <div class="doc-sub">Orçamento 1075/25 · 20 páginas · \\servidor\NC\MQ0281\108339\</div>
+                    <div class="doc-name" id="docName">Carregue um orçamento</div>
+                    <div class="doc-prod" id="docProd">—</div>
+                    <div class="doc-sub" id="docSub">Aguardando carregamento</div>
                 </div>
-                <div class="doc-nav"><button onclick="changePage(-1)">◀ Anterior</button><div class="page-pill mono" id="pageIndicator">Pg. 1 / 20</div><button onclick="changePage(1)">Próxima ▶</button></div>
+                <div class="doc-nav"><button onclick="changePage(-1)">◀ Anterior</button><div class="page-pill mono" id="pageIndicator">Pg. 1 / —</div><button onclick="changePage(1)">Próxima ▶</button></div>
             </div>
         </div>
+        <!-- SETUP PDF -->
         <div class="panel">
-            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Comentários sobre o Setup</span></div>
-            <div class="pb">
-                <div class="setup-photo-box" title="Clique para ampliar"><svg class="ic"><use href="#i-photo"/></svg><div class="photo-label"><svg class="ic fill" style="width:11px;height:11px;"><use href="#i-play"/></svg> Vídeo do Setup · 2:14</div></div>
-                <div class="comment-card">
-                    <div class="ctitle"><svg class="ic"><use href="#i-alert"/></svg> Instrução de Engenharia</div>
-                    Para usinar essa peça: após alinhar, deslocar <strong>0,3 no eixo A</strong> para garantir o ângulo exigido na <strong>cota 07</strong>.
-                    <br><br><strong>Fixação:</strong> Zero-Point Lang + Uma Morsa Lang.<br><em>Siga o vídeo e envie a 1ª peça para Inspeção.</em>
+            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Setup</span></div>
+            <div class="pb" id="setupContent" style="padding:0;overflow:hidden;">
+                <div class="doc-box">
+                    <div class="doc-icon"><svg class="ic"><use href="#i-message"/></svg></div>
+                    <div class="doc-name">Folha de Instrução</div>
+                    <div class="doc-sub">Carregue um orçamento para visualizar o setup</div>
                 </div>
             </div>
         </div>
+        <!-- COTAS CRÍTICAS PDF -->
         <div class="panel">
-            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-ruler"/></svg></span> Desenho e Cotas Críticas</span></div>
-            <div class="pb" style="padding:7px;">
-                <div class="drawing-wrap">
-                    <svg viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="340" height="230" fill="#FBFCFE"/>
-                        <rect x="55" y="35" width="210" height="85" fill="none" stroke="#2A3744" stroke-width="1.8" rx="1"/>
-                        <rect x="120" y="120" width="70" height="28" fill="none" stroke="#2A3744" stroke-width="1.5"/>
-                        <circle cx="85" cy="77" r="9" fill="none" stroke="#2A3744" stroke-width="1.2"/><circle cx="85" cy="77" r="2" fill="#2A3744"/>
-                        <circle cx="235" cy="77" r="9" fill="none" stroke="#2A3744" stroke-width="1.2"/><circle cx="235" cy="77" r="2" fill="#2A3744"/>
-                        <circle cx="160" cy="55" r="6" fill="none" stroke="#2A3744" stroke-width="1.2"/>
-                        <line x1="55" y1="77" x2="265" y2="77" stroke="#00B4C8" stroke-width="0.7" stroke-dasharray="5,3" opacity=".6"/>
-                        <line x1="55" y1="170" x2="265" y2="170" stroke="#1565C0" stroke-width="0.9" stroke-dasharray="4,2"/>
-                        <line x1="55" y1="165" x2="55" y2="175" stroke="#1565C0" stroke-width="1.2"/><line x1="265" y1="165" x2="265" y2="175" stroke="#1565C0" stroke-width="1.2"/>
-                        <text x="160" y="183" text-anchor="middle" font-size="9.5" fill="#1565C0" font-weight="700">98.5 ±0.3</text>
-                        <line x1="25" y1="35" x2="25" y2="120" stroke="#1565C0" stroke-width="0.9" stroke-dasharray="4,2"/>
-                        <line x1="20" y1="35" x2="30" y2="35" stroke="#1565C0" stroke-width="1.2"/><line x1="20" y1="120" x2="30" y2="120" stroke="#1565C0" stroke-width="1.2"/>
-                        <text x="14" y="82" text-anchor="middle" font-size="9" fill="#1565C0" font-weight="700" transform="rotate(-90,14,82)">42.4 ±0.3</text>
-                        <circle cx="85" cy="63" r="7.5" fill="#1565C0"/><text x="85" y="66.5" text-anchor="middle" font-size="7.5" fill="white" font-weight="800">09</text>
-                        <circle cx="235" cy="63" r="7.5" fill="#1565C0"/><text x="235" y="66.5" text-anchor="middle" font-size="7.5" fill="white" font-weight="800">10</text>
-                        <circle cx="160" cy="42" r="7.5" fill="#1565C0"/><text x="160" y="45.5" text-anchor="middle" font-size="7.5" fill="white" font-weight="800">08</text>
-                        <circle cx="155" cy="133" r="7.5" fill="#00838F"/><text x="155" y="136.5" text-anchor="middle" font-size="7.5" fill="white" font-weight="800">04</text>
-                        <rect x="40" y="195" width="240" height="28" fill="none" stroke="#C9D5E3" stroke-width="0.8"/>
-                        <text x="50" y="206" font-size="7" fill="#6B7785">CLIENTE: EMBRAER</text>
-                        <text x="50" y="216" font-size="7" fill="#6B7785">SUPORTE PONTA PRO-FUS CTL AL</text>
-                        <text x="275" y="206" font-size="7" fill="#6B7785" text-anchor="end">PN: S50-09057-009</text>
-                        <text x="275" y="216" font-size="7" fill="#6B7785" text-anchor="end">Rev:000 · Fl:1/1</text>
-                    </svg>
+            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-ruler"/></svg></span> Cotas Críticas</span></div>
+            <div class="pb" id="inspPlanContent" style="padding:0;overflow:hidden;">
+                <div class="doc-box">
+                    <div class="doc-icon"><svg class="ic"><use href="#i-ruler"/></svg></div>
+                    <div class="doc-name">Plano de Inspeção</div>
+                    <div class="doc-sub">Carregue um orçamento para visualizar as cotas críticas</div>
                 </div>
             </div>
         </div>
+        <!-- SUPORTE INTERSETORIAL -->
         <div class="panel">
             <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-alert"/></svg></span> Suporte Intersetorial</span></div>
-            <div style="flex:1;overflow:auto;">
-                <div class="support-grid">
+            <div style="flex:1;overflow:auto;display:flex;align-items:stretch;">
+                <div class="support-grid" style="flex:1;">
                     <div class="sup-btn" onclick="openModal('engenharia')"><span class="sup-icon"><svg class="ic"><use href="#i-device"/></svg></span><span class="sup-label">Engenharia</span><span class="sup-status">Disponível</span></div>
                     <div class="sup-btn" onclick="openModal('inspecao')"><span class="sup-icon"><svg class="ic"><use href="#i-search"/></svg></span><span class="sup-label">Inspeção</span><span class="sup-status">Disponível</span></div>
                     <div class="sup-btn" onclick="openModal('manutencao')"><span class="sup-icon"><svg class="ic"><use href="#i-tool"/></svg></span><span class="sup-label">Manutenção</span><span class="sup-status">Disponível</span></div>
                     <div class="sup-btn" onclick="openModal('preset')"><div class="sup-badge" id="presetBadge">3</div><span class="sup-icon"><svg class="ic"><use href="#i-ruler"/></svg></span><span class="sup-label">Preset</span><span class="sup-status">3 Pendentes</span></div>
                 </div>
-            </div>
-            <div class="counter-bar">
-                <div style="text-align:center;"><div class="c-label">Peças Usinadas</div><div class="c-val mono" id="pieceCount">4</div></div>
-                <div style="text-align:center;"><div class="c-label">Saldo OP</div><div class="c-sub mono" id="saldoOp">11 / 800</div></div>
-                <div style="text-align:center;"><div class="c-label">Refugo</div><div class="c-val mono" style="color:var(--graphite);">0</div></div>
             </div>
         </div>
     </div>
@@ -530,9 +476,9 @@
 <div class="tab-panel" id="tab-inspecao">
     <div class="insp-layout">
         <div class="insp-panel">
-            <div class="insp-ph"><svg class="ic"><use href="#i-chart"/></svg> Controle de Frequência — OP 108339</div>
+            <div class="insp-ph" id="inspFreqHeader"><svg class="ic"><use href="#i-chart"/></svg> Controle de Frequência</div>
             <div class="insp-pb">
-                <div class="freq-row"><label>Qtd. Lote:</label><input id="batchSize" class="mono" type="number" value="800" min="1" oninput="updateFreq()"><label>Peça Atual:</label><input id="currentPieceDisplay" class="mono" type="number" value="11" readonly style="background:#F0F3F7;"></div>
+                <div class="freq-row"><label>Qtd. Lote:</label><input id="batchSize" class="mono" type="number" value="1" min="1" oninput="updateFreq()"><label>Peça Atual:</label><input id="currentPieceDisplay" class="mono" type="number" value="0" readonly style="background:#F0F3F7;"></div>
                 <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-faint);margin-bottom:8px;font-weight:700;">Matriz de Frequência (Embraer)</div>
                 <table class="freq-table">
                     <thead><tr><th>Qtd. Lote</th><th>Frequência</th><th>Próxima Medição</th></tr></thead>
@@ -540,16 +486,16 @@
                         <tr id="fr-0"><td>2 a 10</td><td>1 a cada 2 pçs</td><td>—</td></tr>
                         <tr id="fr-1"><td>11 a 30</td><td>1 a cada 5 pçs</td><td>—</td></tr>
                         <tr id="fr-2"><td>31 a 64</td><td>1 a cada 8 pçs</td><td>—</td></tr>
-                        <tr id="fr-3" class="active"><td><strong>65 ou mais</strong></td><td><strong>1 a cada 10 pçs</strong></td><td><strong id="nextMeasure">Peça 20</strong></td></tr>
+                        <tr id="fr-3"><td><strong>65 ou mais</strong></td><td><strong>1 a cada 10 pçs</strong></td><td><strong id="nextMeasure">—</strong></td></tr>
                     </tbody>
                 </table>
-                <div class="last-ok"><strong>Última Medição Registrada</strong><br>Peça nº 10 — Aprovada · Operador 1220 (Gustavo de Melo)<br>Auditoria: Rodolfo V. / V. Secco · 30/06/2026</div>
+                <div class="last-ok" id="lastMeasureInfo"><strong>Última Medição Registrada</strong><br>Nenhuma medição registrada ainda.</div>
             </div>
         </div>
         <div class="insp-panel">
-            <div class="insp-ph"><svg class="ic"><use href="#i-ruler"/></svg> Inspeção Volante — Embraer · SUPORTE PONTA</div>
+            <div class="insp-ph" id="inspVolHeader"><svg class="ic"><use href="#i-ruler"/></svg> Inspeção Volante</div>
             <div class="insp-pb">
-                <div style="font-size:11px;color:var(--text-soft);margin-bottom:10px;">PN S50-09057-009 · Rev.000 · N°OP: 108339 · Instrumentos: Paquímetro, Micrômetro, Calibrador de Raio</div>
+                <div style="font-size:11px;color:var(--text-soft);margin-bottom:10px;" id="inspVolInfo">Carregue um orçamento para iniciar inspeção.</div>
                 <table class="insp-table">
                     <thead><tr><th>Cota</th><th>Nominal</th><th>Tolerância</th><th>Medida (mm)</th><th>Status</th></tr></thead>
                     <tbody id="inspBody"></tbody>
@@ -568,7 +514,7 @@
     <div class="si"><div class="sd sg"></div> TOTVS: Conectado</div>
     <div class="si"><div class="sd sy"></div> Lista Ferramenta: Pendente</div>
     <div class="si"><div class="sd sb"></div> Servidor NC: \\servidor\NC</div>
-    <div style="margin-left:auto;" class="mono">30/06/2026 · 2º Turno · MQ0281 · <span id="clockDisplay"></span></div>
+    <div style="margin-left:auto;" class="mono">01/07/2026 · 2º Turno · MQ0281 · <span id="clockDisplay"></span></div>
 </div>
 
 <!-- SUPPORT MODAL -->
@@ -588,6 +534,20 @@
             <p style="margin-bottom:13px;">O cronômetro de <strong>máquina parada</strong> começa a contar assim que você escolher o motivo. Clique em <strong>Retomar Máquina</strong> quando voltar a produzir.</p>
             <div class="reason-grid" id="reasonGrid"></div>
         </div>
+    </div>
+</div>
+
+<!-- OPERATOR SWAP MODAL -->
+<div class="modal-overlay" id="swapModal">
+    <div class="modal">
+        <div class="modal-head"><span class="mh-l"><svg class="ic"><use href="#i-user"/></svg> Trocar Operador</span><span class="modal-close" onclick="closeSwapModal()"><svg class="ic"><use href="#i-x"/></svg></span></div>
+        <div class="modal-body">
+            <p>Digite a matrícula do novo operador:</p>
+            <input class="login-input mono" id="swapInput" type="text" inputmode="numeric" placeholder="0000" maxlength="6" style="width:100%;margin-bottom:10px;" onkeydown="if(event.key==='Enter')doSwap()">
+            <div id="swapPreview" style="text-align:center;font-size:14px;font-weight:700;color:var(--blue);height:20px;"></div>
+            <div id="swapError" style="color:var(--red);font-size:13px;font-weight:600;text-align:center;height:17px;"></div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" onclick="closeSwapModal()">Cancelar</button><button class="btn-primary" onclick="doSwap()"><svg class="ic"><use href="#i-check"/></svg> Confirmar</button></div>
     </div>
 </div>
 
@@ -617,78 +577,195 @@ const TOOLS = [
     { id:'T29', name:'Fresa Topo Reto 4103', dim:'Ø8', spec:'R0 · 3 cortes · CU:8' },
     { id:'T30', name:'Fresa Esférica Cod.4001', dim:'Ø10', spec:'R5 · 2 cortes · CU:6' },
 ];
-const INSP_ITEMS = [
-    { id:'01', nom:'Controlado Q.A.', tol:'—', min:null, max:null },
-    { id:'02', nom:'3.0 ±0.3', tol:'2.7~3.3', min:2.7, max:3.3 },
-    { id:'03', nom:'53.0 ±0.3', tol:'52.7~53.3', min:52.7, max:53.3 },
-    { id:'04', nom:'2.0 ±0.3', tol:'1.7~2.3', min:1.7, max:2.3 },
-    { id:'08', nom:'25.2 ±0.3', tol:'24.9~25.5', min:24.9, max:25.5 },
-    { id:'09', nom:'Ø2.5 +0.25/0', tol:'2.5~2.75', min:2.5, max:2.75 },
-    { id:'10', nom:'12.5 ±0.3', tol:'12.2~12.8', min:12.2, max:12.8 },
-    { id:'13', nom:'R8 ±2', tol:'6.0~10.0', min:6.0, max:10.0 },
-    { id:'14', nom:'R5 ±1', tol:'4.0~6.0', min:4.0, max:6.0 },
-    { id:'15', nom:'2.0 ±0.3', tol:'1.7~2.3', min:1.7, max:2.3 },
-    { id:'19', nom:'4×Ø2.5 +0.25/0', tol:'2.5~2.75', min:2.5, max:2.75 },
-];
+
 const STOP_REASONS = [
     'Aguardando inspeção / liberação', 'Troca ou quebra de ferramenta', 'Manutenção / quebra de máquina',
     'Falta de matéria-prima', 'Falta de programa NC / processo', 'Falta de dispositivo de fixação',
     'Aguardando preset de ferramenta', 'Ajuste dimensional (corrigindo cota)', 'Limpeza / remoção de cavaco',
     'Refeição / intervalo', 'Necessidade fisiológica', 'Reunião / treinamento',
-    'Falta de energia', 'Troca de turno', 'Outro motivo',
+    'Falta de energia', 'Troca de turno', 'Fora de produção', 'Outro motivo',
 ];
-const OPERATORS = { '1220': 'Gustavo de Melo' };
+
+const OPERATORS = {
+    '1220': 'Gustavo de Melo',
+    '975': 'Zaqueu',
+    '1117': 'Edson Pereira',
+};
+
+const BUDGETS = {
+    '137715': {
+        orcamento: '1377/15', op: 25, pieces: 12,
+        pn: '390-14145-001', rev: '003', desc: 'SUPORTE FIXAÇÃO — Centro de Usinagem',
+        type: 'FCNC', program: '13771502', client: 'EMBRAER',
+        setupTime: 18, fixacao: 'Zero-Point Lang + Morsa Lang',
+        setupNotes: 'Após alinhar, verificar paralelismo com relógio comparador. Deslocar <strong>0.15mm no eixo B</strong> conforme histórico. Atenção ao aperto da morsa — torque 45 N·m.',
+        pages: 14, setupPage: 9, inspPage: 11,
+        cotas: [
+            { id:'01', nom:'45.0 ±0.1', tol:'44.9 ~ 45.1', min:44.9, max:45.1 },
+            { id:'02', nom:'22.50 ±0.05', tol:'22.45 ~ 22.55', min:22.45, max:22.55 },
+            { id:'03', nom:'Ø12.0 H7', tol:'12.000 ~ 12.018', min:12.000, max:12.018 },
+            { id:'04', nom:'8.0 ±0.1', tol:'7.9 ~ 8.1', min:7.9, max:8.1 },
+            { id:'05', nom:'R3.0 ±0.5', tol:'2.5 ~ 3.5', min:2.5, max:3.5 },
+            { id:'06', nom:'30.0 ±0.15', tol:'29.85 ~ 30.15', min:29.85, max:30.15 },
+        ],
+    },
+    '004120': {
+        orcamento: '41/20', op: 40, pieces: 1,
+        pn: '196-61561-003QB10', rev: '005', desc: 'PEÇA ESTRUTURAL — 5 Eixos',
+        type: 'FCNC', program: '00412006', client: 'EMBRAER',
+        setupTime: 35, fixacao: 'Dispositivo especial 5 eixos + Grampos escalonados',
+        setupNotes: 'Peça única — <strong>não há margem para refugo</strong>. Fixação no dispositivo dedicado, alinhar nos 3 planos com apalpador. Conferir offset Z antes do 1º desbaste. Programa com ciclo de medição automático.',
+        pages: 32, setupPage: 20, inspPage: 28,
+        cotas: [
+            { id:'01', nom:'120.00 ±0.05', tol:'119.95 ~ 120.05', min:119.95, max:120.05 },
+            { id:'02', nom:'85.0 ±0.1', tol:'84.9 ~ 85.1', min:84.9, max:85.1 },
+            { id:'03', nom:'Ø25.0 H7', tol:'25.000 ~ 25.021', min:25.000, max:25.021 },
+            { id:'04', nom:'15.00 ±0.05', tol:'14.95 ~ 15.05', min:14.95, max:15.05 },
+            { id:'05', nom:'45.0° ±0.5°', tol:'44.5 ~ 45.5', min:44.5, max:45.5 },
+            { id:'06', nom:'R5.0 ±0.3', tol:'4.7 ~ 5.3', min:4.7, max:5.3 },
+            { id:'07', nom:'Ø8.0 H7', tol:'8.000 ~ 8.015', min:8.000, max:8.015 },
+            { id:'08', nom:'62.50 ±0.05', tol:'62.45 ~ 62.55', min:62.45, max:62.55 },
+        ],
+    },
+    '552515': {
+        orcamento: '5525/15', op: 65, pieces: 8,
+        pn: '500-19063-005', rev: '002', desc: 'EIXO USINADO — Torno CNC + Centro',
+        type: 'FCNC', program: '55251506', client: 'EMBRAER',
+        setupTime: 22, fixacao: 'Placa de 3 castanhas moles + Contra-ponto',
+        setupNotes: 'Usinar castanhas moles antes de fixar. Batimento máximo <strong>0.02mm TIR</strong>. Contra-ponto com pressão média — verificar marca do centro. Sobremetal de 0.3mm para acabamento final no centro de usinagem.',
+        pages: 27, setupPage: 22, inspPage: 24,
+        cotas: [
+            { id:'01', nom:'Ø50.0 h6', tol:'49.984 ~ 50.000', min:49.984, max:50.000 },
+            { id:'02', nom:'30.0 ±0.1', tol:'29.9 ~ 30.1', min:29.9, max:30.1 },
+            { id:'03', nom:'Ø18.0 H7', tol:'18.000 ~ 18.018', min:18.000, max:18.018 },
+            { id:'04', nom:'10.00 ±0.05', tol:'9.95 ~ 10.05', min:9.95, max:10.05 },
+            { id:'05', nom:'R2.0 ±0.3', tol:'1.7 ~ 2.3', min:1.7, max:2.3 },
+            { id:'06', nom:'75.0 ±0.1', tol:'74.9 ~ 75.1', min:74.9, max:75.1 },
+            { id:'07', nom:'Ø12.0 H7', tol:'12.000 ~ 12.018', min:12.000, max:12.018 },
+        ],
+    },
+};
 
 const magazine = new Array(30).fill(null);
-let draggedTool = null, pieceCount = 4, currentPage = 1;
-const totalPages = 20;
+let draggedTool = null, pieceCount = 0, currentPage = 1;
+let totalPages = 1;
 let machineState = 'stopped', stateBeforeStop = 'producing';
 let setupRunning = false, setupStart = null, setupElapsed = 0;
 let cycleStart = null, stopStart = null, totalDowntime = 0, timerInterval = null;
+let currentBudget = null;
+let currentOperatorMat = null;
 
 function doLogin() {
     const mat = document.getElementById('matriculaInput').value.trim();
     const err = document.getElementById('loginError');
     if (!mat) { err.textContent = 'Digite sua matrícula.'; return; }
-    const name = OPERATORS[mat] || 'Operador ' + mat;
+    const name = OPERATORS[mat];
+    if (!name) { err.textContent = 'Matrícula não encontrada.'; return; }
+    currentOperatorMat = mat;
     document.getElementById('hdOperator').textContent = mat + ' · ' + name;
     document.getElementById('loginScreen').classList.add('hidden');
     err.textContent = '';
-    setTimeout(() => document.getElementById('opInput').focus(), 450);
+    setTimeout(() => document.getElementById('orcInput').focus(), 450);
 }
+
 function logout() {
     document.body.classList.add('locked');
     document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('matriculaInput').value = '';
     document.getElementById('hdOS').className = 'chip os empty';
-    document.getElementById('hdOS').innerHTML = 'Sem O.S. <span class="logout" onclick="logout()" title="Sair"><svg class="ic"><use href="#i-power"/></svg></span>';
+    document.getElementById('hdOS').textContent = 'Sem O.S.';
+    currentBudget = null;
+    currentOperatorMat = null;
+    pieceCount = 0;
+    updatePieceDisplay();
+    machineState = 'stopped';
+    stopStart = null;
+    totalDowntime = 0;
     if (timerInterval) clearInterval(timerInterval);
     setTimeout(() => document.getElementById('matriculaInput').focus(), 200);
 }
-function loadOP() {
-    const op = document.getElementById('opInput').value.trim();
-    if (!op) { showToast('Digite o número da OP', 'blue'); return; }
+
+function loadBudget() {
+    const orc = document.getElementById('orcInput').value.trim();
+    if (!orc) { showToast('Digite o número do orçamento', 'blue'); return; }
+    const budget = BUDGETS[orc];
+    if (!budget) { showToast('Orçamento "' + orc + '" não encontrado', 'red'); return; }
+
+    currentBudget = budget;
+    pieceCount = 0;
+    currentPage = 1;
+    totalPages = budget.pages;
     document.body.classList.remove('locked');
+
     document.getElementById('hdOS').className = 'chip os';
-    document.getElementById('hdOS').innerHTML = 'O.S. ' + op + ' <span class="logout" onclick="logout()" title="Sair"><svg class="ic"><use href="#i-power"/></svg></span>';
+    document.getElementById('hdOS').textContent = 'Orç. ' + budget.orcamento + ' · OP ' + budget.op;
+
     machineState = 'stopped';
+    stopStart = null;
+    totalDowntime = 0;
+    setupElapsed = 0;
+    cycleStart = null;
+    if (timerInterval) clearInterval(timerInterval);
     setJobStatus('Parada', 'var(--red)', 'var(--red)');
     document.getElementById('liveTimer').textContent = '00:00:00';
     document.getElementById('liveTimer').style.color = 'var(--text-faint)';
-    showToast('OP ' + op + ' carregada — painel liberado', 'blue');
+    document.getElementById('setupCompare').textContent = '— / ' + budget.setupTime + 'min';
+    document.getElementById('setupCompare').style.color = '';
+    document.getElementById('downtimeTotal').textContent = '0min';
+    document.getElementById('downtimeReason').textContent = '—';
+    document.getElementById('runBtn').classList.remove('active');
+    document.getElementById('setupBtn').classList.remove('active');
+    document.getElementById('setupBtn').innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup';
+    document.getElementById('stopBtn').classList.remove('active');
+    document.getElementById('stopBtn').innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Parar Máquina';
+
+    updatePieceDisplay();
+    updatePanelContent(budget);
+
+    document.getElementById('batchSize').value = budget.pieces;
+    document.getElementById('currentPieceDisplay').value = 0;
+    updateFreq();
+
+    showToast('Orçamento ' + orc + ' · OP ' + budget.op + ' · ' + budget.pieces + ' peça(s)', 'blue');
 }
 
-function fmtTime(ms) { const s = Math.floor(ms/1000); return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function updatePieceDisplay() {
+    const total = currentBudget ? currentBudget.pieces : 0;
+    document.getElementById('pieceCountDisplay').textContent = pieceCount + ' / ' + total;
+}
+
+function updatePanelContent(b) {
+    document.getElementById('pnBadge').textContent = b.pn;
+    document.getElementById('docName').textContent = b.pn + ' · Rev.' + b.rev;
+    document.getElementById('docProd').textContent = b.desc + ' — MAZAK';
+    document.getElementById('docSub').textContent = 'Orçamento ' + b.orcamento + ' · ' + b.pages + ' páginas · Programa: ' + b.program;
+    document.getElementById('pageIndicator').textContent = 'Pg. 1 / ' + b.pages;
+
+    var pdfKey = Object.keys(BUDGETS).find(function(k) { return BUDGETS[k] === b; });
+    document.getElementById('setupContent').innerHTML =
+        '<iframe src="pdfs/' + pdfKey + '.pdf#page=' + b.setupPage + '" style="width:100%;height:100%;border:none;"></iframe>';
+
+    document.getElementById('inspPlanContent').innerHTML =
+        '<iframe src="pdfs/' + pdfKey + '.pdf#page=' + b.inspPage + '" style="width:100%;height:100%;border:none;"></iframe>';
+
+    document.getElementById('inspFreqHeader').innerHTML = '<svg class="ic"><use href="#i-chart"/></svg> Controle de Frequência — OP ' + b.op;
+    document.getElementById('inspVolHeader').innerHTML = '<svg class="ic"><use href="#i-ruler"/></svg> Inspeção Volante — ' + b.client + ' · ' + b.desc.split('—')[0].trim();
+    document.getElementById('inspVolInfo').textContent = 'PN ' + b.pn + ' · Rev.' + b.rev + ' · Programa: ' + b.program + ' · Instrumentos: Paquímetro, Micrômetro, Calibrador de Raio';
+
+    renderInspection(b.cotas);
+}
+
+function fmtTime(ms) { const s = Math.floor(ms/1000); return String(Math.floor(s/3600)).padStart(2,'0') + ':' + String(Math.floor((s%3600)/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
 function fmtMin(ms) { return Math.round(ms/60000) + 'min'; }
 function setJobStatus(text, textColor, dotColor) {
     const el = document.getElementById('jobStatus');
-    el.innerHTML = `<span class="state-dot" style="background:${dotColor};"></span>${text}`;
+    el.innerHTML = '<span class="state-dot" style="background:' + dotColor + ';"></span>' + text;
     el.style.color = textColor;
 }
 function startTimer(fn, color) {
     if (timerInterval) clearInterval(timerInterval);
     const t = document.getElementById('liveTimer'); t.style.color = color || 'var(--blue)';
-    timerInterval = setInterval(() => { t.textContent = fmtTime(fn()); }, 250);
+    timerInterval = setInterval(function() { t.textContent = fmtTime(fn()); }, 250);
 }
 
 function runMachine() {
@@ -699,28 +776,29 @@ function runMachine() {
     setupRunning = false; document.getElementById('setupBtn').innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup';
     setJobStatus('Produzindo', 'var(--green)', 'var(--green)');
     cycleStart = cycleStart || Date.now();
-    startTimer(() => Date.now() - cycleStart, 'var(--green)');
+    startTimer(function() { return Date.now() - cycleStart; }, 'var(--green)');
 }
 
 function toggleSetup() {
     if (machineState === 'stopped' && stopStart) { showToast('Retome a máquina primeiro', 'red'); return; }
-    const btn = document.getElementById('setupBtn');
+    var btn = document.getElementById('setupBtn');
     if (!setupRunning) {
         setupRunning = true; setupStart = Date.now(); machineState = 'setup';
         btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; btn.classList.add('active');
         document.getElementById('runBtn').classList.remove('active');
         setJobStatus('Em Setup', 'var(--yellow)', 'var(--yellow)');
-        startTimer(() => Date.now() - setupStart, 'var(--yellow)');
+        startTimer(function() { return Date.now() - setupStart; }, 'var(--yellow)');
     } else {
         setupRunning = false; setupElapsed = Date.now() - setupStart;
         btn.innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup'; btn.classList.remove('active');
-        const real = Math.round(setupElapsed/60000);
-        const sc = document.getElementById('setupCompare');
-        sc.textContent = fmtMin(setupElapsed) + ' / 22min';
-        sc.style.color = real <= 22 ? 'var(--green)' : 'var(--red)';
+        var real = Math.round(setupElapsed/60000);
+        var stdTime = currentBudget ? currentBudget.setupTime : 22;
+        var sc = document.getElementById('setupCompare');
+        sc.textContent = fmtMin(setupElapsed) + ' / ' + stdTime + 'min';
+        sc.style.color = real <= stdTime ? 'var(--green)' : 'var(--red)';
         machineState = 'producing'; document.getElementById('runBtn').classList.add('active');
         setJobStatus('Produzindo', 'var(--green)', 'var(--green)');
-        cycleStart = Date.now(); startTimer(() => Date.now() - cycleStart, 'var(--green)');
+        cycleStart = Date.now(); startTimer(function() { return Date.now() - cycleStart; }, 'var(--green)');
         showToast('Setup finalizado: ' + fmtTime(setupElapsed), 'blue');
     }
 }
@@ -737,133 +815,148 @@ function onStopBtn() {
     else openStopModal();
 }
 function openStopModal() {
-    const grid = document.getElementById('reasonGrid'); grid.innerHTML = '';
-    STOP_REASONS.forEach(r => {
-        const b = document.createElement('button'); b.className = 'reason-btn';
-        b.innerHTML = `<span class="reason-dot"></span><span class="reason-tx">${r}</span>`;
-        b.onclick = () => selectStopReason(r); grid.appendChild(b);
+    var grid = document.getElementById('reasonGrid'); grid.innerHTML = '';
+    STOP_REASONS.forEach(function(r) {
+        var b = document.createElement('button'); b.className = 'reason-btn';
+        b.innerHTML = '<span class="reason-dot"></span><span class="reason-tx">' + r + '</span>';
+        b.onclick = function() { selectStopReason(r); }; grid.appendChild(b);
     });
     document.getElementById('stopModal').classList.add('show');
 }
 function closeStopModal() { document.getElementById('stopModal').classList.remove('show'); }
 function selectStopReason(reason) {
     closeStopModal();
+    if (reason === 'Fora de produção') {
+        showToast('Saindo — Fora de produção', 'red');
+        setTimeout(logout, 800);
+        return;
+    }
     stateBeforeStop = (machineState === 'stopped') ? 'producing' : machineState;
     machineState = 'stopped'; stopStart = Date.now();
     setJobStatus('PARADA', 'var(--red)', 'var(--red)');
     document.getElementById('downtimeReason').textContent = reason;
     document.getElementById('runBtn').classList.remove('active');
     document.getElementById('setupBtn').classList.remove('active');
-    const btn = document.getElementById('stopBtn');
+    var btn = document.getElementById('stopBtn');
     btn.innerHTML = '<svg class="ic fill"><use href="#i-play"/></svg> Retomar Máquina'; btn.classList.add('active');
-    startTimer(() => Date.now() - stopStart, 'var(--red)');
+    startTimer(function() { return Date.now() - stopStart; }, 'var(--red)');
     showToast('Máquina parada: ' + reason, 'red');
 }
 function resumeMachine() {
     if (stopStart) { totalDowntime += Date.now() - stopStart; stopStart = null; }
     document.getElementById('downtimeTotal').textContent = fmtMin(totalDowntime);
-    const btn = document.getElementById('stopBtn');
+    var btn = document.getElementById('stopBtn');
     btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Parar Máquina'; btn.classList.remove('active');
     machineState = stateBeforeStop;
-    if (machineState === 'setup') { setupStart = Date.now(); setupRunning = true; document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; document.getElementById('setupBtn').classList.add('active'); setJobStatus('Em Setup','var(--yellow)','var(--yellow)'); startTimer(() => Date.now()-setupStart,'var(--yellow)'); }
-    else { document.getElementById('runBtn').classList.add('active'); setJobStatus('Produzindo','var(--green)','var(--green)'); cycleStart = Date.now(); startTimer(() => Date.now()-cycleStart,'var(--green)'); }
+    if (machineState === 'setup') { setupStart = Date.now(); setupRunning = true; document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; document.getElementById('setupBtn').classList.add('active'); setJobStatus('Em Setup','var(--yellow)','var(--yellow)'); startTimer(function(){return Date.now()-setupStart;},'var(--yellow)'); }
+    else { document.getElementById('runBtn').classList.add('active'); setJobStatus('Produzindo','var(--green)','var(--green)'); cycleStart = Date.now(); startTimer(function(){return Date.now()-cycleStart;},'var(--green)'); }
     showToast('Máquina retomada · Parada total: ' + fmtMin(totalDowntime), 'blue');
 }
 
 function switchTab(el, name) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     el.classList.add('active'); document.getElementById('tab-' + name).classList.add('active');
 }
 function goToInspection() {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     document.querySelectorAll('.tab')[2].classList.add('active');
     document.getElementById('tab-inspecao').classList.add('active');
     document.getElementById('alertBar').classList.remove('show');
 }
-function changePage(d) { currentPage = Math.max(1, Math.min(totalPages, currentPage + d)); document.getElementById('pageIndicator').textContent = `Pg. ${currentPage} / ${totalPages}`; }
+function changePage(d) { currentPage = Math.max(1, Math.min(totalPages, currentPage + d)); document.getElementById('pageIndicator').textContent = 'Pg. ' + currentPage + ' / ' + totalPages; }
 function getFreq(b) { if (b>=65) return {every:10,row:3}; if (b>=31) return {every:8,row:2}; if (b>=11) return {every:5,row:1}; return {every:2,row:0}; }
 function updateFreq() {
-    const b = parseInt(document.getElementById('batchSize').value) || 1; const f = getFreq(b);
-    for (let i=0;i<4;i++) document.getElementById('fr-'+i).classList.toggle('active', i===f.row);
-    const oper = parseInt(document.getElementById('currentPieceDisplay').value) || 11;
-    document.getElementById('nextMeasure').textContent = 'Peça ' + (Math.floor(oper/f.every)+1)*f.every;
+    var b = parseInt(document.getElementById('batchSize').value) || 1; var f = getFreq(b);
+    for (var i=0;i<4;i++) document.getElementById('fr-'+i).classList.toggle('active', i===f.row);
+    var nextP = (Math.floor(pieceCount/f.every)+1)*f.every;
+    document.getElementById('nextMeasure').textContent = 'Peça ' + nextP;
 }
 function addPiece() {
-    pieceCount++; const oper = 11 + (pieceCount - 4);
-    document.getElementById('pieceCount').textContent = pieceCount;
-    document.getElementById('saldoOp').textContent = oper + ' / 800';
-    document.getElementById('currentPieceDisplay').value = oper;
-    const b = parseInt(document.getElementById('batchSize').value) || 800; const f = getFreq(b);
-    if (oper % f.every === 0) {
-        document.getElementById('alertPiece').textContent = oper;
-        document.getElementById('alertBar').classList.add('show');
-        document.getElementById('inspTabBadge').style.display = 'inline-block';
+    pieceCount++;
+    updatePieceDisplay();
+    document.getElementById('currentPieceDisplay').value = pieceCount;
+    if (currentBudget) {
+        var b = currentBudget.pieces; var f = getFreq(b);
+        if (pieceCount > 0 && pieceCount % f.every === 0) {
+            document.getElementById('alertPiece').textContent = pieceCount;
+            document.getElementById('alertBar').classList.add('show');
+            document.getElementById('inspTabBadge').style.display = 'inline-block';
+        }
     }
     updateFreq();
 }
 function renderLibrary() {
-    const lib = document.getElementById('toolLibrary'); lib.innerHTML = '';
-    TOOLS.forEach(tool => {
-        const inMag = magazine.some(t => t && t.id === tool.id);
-        const card = document.createElement('div'); card.className = 'tool-card' + (inMag ? ' in-mag' : ''); card.draggable = !inMag;
-        card.innerHTML = `<div class="tc-num">${tool.id}</div><div class="tc-info"><div class="tc-name">${tool.name}</div><div class="tc-spec">${tool.dim} · ${tool.spec}</div></div>${inMag?'<svg class="ic" style="color:var(--green)"><use href="#i-check"/></svg>':''}`;
+    var lib = document.getElementById('toolLibrary'); lib.innerHTML = '';
+    TOOLS.forEach(function(tool) {
+        var inMag = magazine.some(function(t) { return t && t.id === tool.id; });
+        var card = document.createElement('div'); card.className = 'tool-card' + (inMag ? ' in-mag' : ''); card.draggable = !inMag;
+        card.innerHTML = '<div class="tc-num">' + tool.id + '</div><div class="tc-info"><div class="tc-name">' + tool.name + '</div><div class="tc-spec">' + tool.dim + ' · ' + tool.spec + '</div></div>' + (inMag?'<svg class="ic" style="color:var(--green)"><use href="#i-check"/></svg>':'');
         if (!inMag) {
-            card.addEventListener('dragstart', e => { draggedTool = tool; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
-            card.addEventListener('dragend', () => { card.classList.remove('dragging'); draggedTool = null; });
+            (function(t, c) {
+                c.addEventListener('dragstart', function(e) { draggedTool = t; c.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+                c.addEventListener('dragend', function() { c.classList.remove('dragging'); draggedTool = null; });
+            })(tool, card);
         }
         lib.appendChild(card);
     });
 }
 function renderMagazine() {
-    const grid = document.getElementById('magazineGrid'); grid.innerHTML = ''; let filled = 0;
-    for (let i=0;i<30;i++) {
-        const tool = magazine[i]; if (tool) filled++;
-        const slot = document.createElement('div'); slot.className = 'm-slot ' + (tool?'filled':'empty');
+    var grid = document.getElementById('magazineGrid'); grid.innerHTML = ''; var filled = 0;
+    for (var i=0;i<30;i++) {
+        var tool = magazine[i]; if (tool) filled++;
+        var slot = document.createElement('div'); slot.className = 'm-slot ' + (tool?'filled':'empty');
         if (tool) {
-            const sn = tool.name.includes('—') ? tool.name.split('—')[1].trim() : tool.name;
-            slot.innerHTML = `<div class="ms-num f">${tool.id}</div><div class="ms-del" onclick="removeTool(${i})">✕</div><div class="ms-icon f"><svg class="ic"><use href="#i-bit"/></svg></div><div class="ms-name">${sn.substring(0,18)}</div><div class="ms-dim mono">${tool.dim}</div>`;
+            var sn = tool.name.includes('—') ? tool.name.split('—')[1].trim() : tool.name;
+            slot.innerHTML = '<div class="ms-num f">' + tool.id + '</div><div class="ms-del" onclick="removeTool(' + i + ')">✕</div><div class="ms-icon f"><svg class="ic"><use href="#i-bit"/></svg></div><div class="ms-name">' + sn.substring(0,18) + '</div><div class="ms-dim mono">' + tool.dim + '</div>';
         } else {
-            slot.innerHTML = `<div class="ms-num">T${String(i+1).padStart(2,'0')}</div><div class="ms-icon"><svg class="ic"><use href="#i-bit"/></svg></div><div class="ms-dim" style="color:#CBD6E2;">Vazio</div>`;
+            slot.innerHTML = '<div class="ms-num">T' + String(i+1).padStart(2,'0') + '</div><div class="ms-icon"><svg class="ic"><use href="#i-bit"/></svg></div><div class="ms-dim" style="color:#CBD6E2;">Vazio</div>';
         }
-        slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragover'); });
-        slot.addEventListener('dragleave', () => slot.classList.remove('dragover'));
-        slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('dragover'); if (draggedTool && !magazine[i]) { const id = draggedTool.id; magazine[i] = draggedTool; refresh(); showToast(`${id} inserido no Slot T${String(i+1).padStart(2,'0')}`, 'blue'); } });
+        (function(idx, sl) {
+            sl.addEventListener('dragover', function(e) { e.preventDefault(); sl.classList.add('dragover'); });
+            sl.addEventListener('dragleave', function() { sl.classList.remove('dragover'); });
+            sl.addEventListener('drop', function(e) { e.preventDefault(); sl.classList.remove('dragover'); if (draggedTool && !magazine[idx]) { var id = draggedTool.id; magazine[idx] = draggedTool; refresh(); showToast(id + ' inserido no Slot T' + String(idx+1).padStart(2,'0'), 'blue'); } });
+        })(i, slot);
         grid.appendChild(slot);
     }
-    document.getElementById('filledCount').textContent = `Ocupados: ${filled} / 30`;
+    document.getElementById('filledCount').textContent = 'Ocupados: ' + filled + ' / 30';
 }
 function removeTool(i) { magazine[i] = null; refresh(); }
 function refresh() { renderLibrary(); renderMagazine(); }
-function renderInspection() {
-    const tb = document.getElementById('inspBody'); tb.innerHTML = '';
-    INSP_ITEMS.forEach(item => {
-        const tr = document.createElement('tr'); const isQA = item.min === null;
-        tr.innerHTML = `<td><strong>${item.id}</strong></td><td class="mono">${item.nom}</td><td style="color:var(--text-soft);" class="mono">${item.tol}</td><td>${isQA?'<input class="m-input mono" value="QA" disabled style="background:#F0F3F7;color:var(--text-faint);">':`<input class="m-input mono" placeholder="—" data-min="${item.min}" data-max="${item.max}" oninput="validateMeasure(this)">`}</td><td><span class="dot-status" id="ds-${item.id}"><svg class="ic ok"><use href="#i-check"/></svg><svg class="ic nok"><use href="#i-x"/></svg></span></td>`;
+
+function renderInspection(cotas) {
+    var items = cotas || [];
+    var tb = document.getElementById('inspBody'); tb.innerHTML = '';
+    items.forEach(function(item) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><strong>' + item.id + '</strong></td><td class="mono">' + item.nom + '</td><td style="color:var(--text-soft);" class="mono">' + item.tol + '</td><td><input class="m-input mono" placeholder="—" data-min="' + item.min + '" data-max="' + item.max + '" oninput="validateMeasure(this)"></td><td><span class="dot-status" id="ds-' + item.id + '"><svg class="ic ok"><use href="#i-check"/></svg><svg class="ic nok"><use href="#i-x"/></svg></span></td>';
         tb.appendChild(tr);
     });
 }
 function validateMeasure(input) {
-    const val = parseFloat(input.value), min = parseFloat(input.dataset.min), max = parseFloat(input.dataset.max);
-    const id = input.closest('tr').cells[0].textContent.trim(); const dot = document.getElementById('ds-'+id);
+    var val = parseFloat(input.value), min = parseFloat(input.dataset.min), max = parseFloat(input.dataset.max);
+    var id = input.closest('tr').cells[0].textContent.trim(); var dot = document.getElementById('ds-'+id);
     if (isNaN(val)) { input.className='m-input mono'; dot.className='dot-status'; }
     else if (val>=min && val<=max) { input.className='m-input mono ok'; dot.className='dot-status ok'; }
     else { input.className='m-input mono nok'; dot.className='dot-status nok'; }
 }
 function registerMeasures() {
-    const inputs = document.querySelectorAll('.m-input:not([disabled])'); let filled=0, nok=0;
-    inputs.forEach(i => { if (i.value) { filled++; if (i.classList.contains('nok')) nok++; } });
+    var inputs = document.querySelectorAll('.m-input:not([disabled])'); var filled=0, nok=0;
+    inputs.forEach(function(i) { if (i.value) { filled++; if (i.classList.contains('nok')) nok++; } });
     if (filled===0) { showToast('Preencha ao menos uma medida', 'blue'); return; }
-    if (nok>0) showToast(`${nok} cota(s) fora da tolerância!`, 'red');
+    if (nok>0) showToast(nok + ' cota(s) fora da tolerância!', 'red');
     else showToast('Medições registradas e aprovadas');
     document.getElementById('alertBar').classList.remove('show');
     document.getElementById('inspTabBadge').style.display = 'none';
+    var opName = currentOperatorMat ? (currentOperatorMat + ' (' + OPERATORS[currentOperatorMat] + ')') : '—';
+    document.getElementById('lastMeasureInfo').innerHTML = '<strong>Última Medição Registrada</strong><br>Peça nº ' + pieceCount + ' — ' + (nok>0?'Com desvio':'Aprovada') + ' · Operador ' + opName + '<br>Auditoria: Rodolfo V. / V. Secco · ' + new Date().toLocaleDateString('pt-BR');
 }
 function clearMeasures() {
-    document.querySelectorAll('.m-input:not([disabled])').forEach(i => { i.value=''; i.className='m-input mono'; });
-    document.querySelectorAll('.dot-status').forEach(d => d.className='dot-status');
+    document.querySelectorAll('.m-input:not([disabled])').forEach(function(i) { i.value=''; i.className='m-input mono'; });
+    document.querySelectorAll('.dot-status').forEach(function(d) { d.className='dot-status'; });
 }
+
 const SUPPORT_INFO = {
     engenharia: { ic:'i-device', title:'Acionar — Engenharia', msg:'Enviar chamado para a Engenharia: dúvidas sobre processo, programa NC, parâmetros de corte ou fixação.' },
     inspecao: { ic:'i-search', title:'Acionar — Inspeção / Qualidade', msg:'Solicitar Qualidade: liberação de 1ª peça, medição de cota crítica ou dúvida dimensional.' },
@@ -871,26 +964,53 @@ const SUPPORT_INFO = {
     preset: { ic:'i-ruler', title:'Acionar — Preset', msg:'Solicitar medição de ferramenta, substituição por quebra ou envio de nova ferramenta para o magazine.' }
 };
 function openModal(s) {
-    const i = SUPPORT_INFO[s];
-    document.getElementById('modalTitle').innerHTML = `<svg class="ic"><use href="#${i.ic}"/></svg> ${i.title}`;
+    var i = SUPPORT_INFO[s];
+    document.getElementById('modalTitle').innerHTML = '<svg class="ic"><use href="#' + i.ic + '"/></svg> ' + i.title;
     document.getElementById('modalMsg').textContent = i.msg;
     document.getElementById('modalTextarea').value = '';
     document.getElementById('supModal').classList.add('show');
-    setTimeout(() => document.getElementById('modalTextarea').focus(), 100);
+    setTimeout(function() { document.getElementById('modalTextarea').focus(); }, 100);
 }
 function closeModal() { document.getElementById('supModal').classList.remove('show'); }
 function sendSupport() { closeModal(); showToast('Chamado enviado ao setor', 'blue'); }
+
+function openSwapModal() {
+    document.getElementById('swapInput').value = '';
+    document.getElementById('swapError').textContent = '';
+    document.getElementById('swapPreview').textContent = '';
+    document.getElementById('swapModal').classList.add('show');
+    setTimeout(function() { document.getElementById('swapInput').focus(); }, 100);
+    document.getElementById('swapInput').addEventListener('input', function() {
+        var m = this.value.trim();
+        var name = OPERATORS[m];
+        document.getElementById('swapPreview').textContent = name || '';
+        document.getElementById('swapError').textContent = '';
+    });
+}
+function closeSwapModal() { document.getElementById('swapModal').classList.remove('show'); }
+function doSwap() {
+    var mat = document.getElementById('swapInput').value.trim();
+    if (!mat) { document.getElementById('swapError').textContent = 'Digite a matrícula.'; return; }
+    var name = OPERATORS[mat];
+    if (!name) { document.getElementById('swapError').textContent = 'Matrícula não encontrada.'; return; }
+    currentOperatorMat = mat;
+    document.getElementById('hdOperator').textContent = mat + ' · ' + name;
+    closeSwapModal();
+    showToast('Operador trocado: ' + name, 'blue');
+}
+
 function showToast(msg, cls) {
-    const old = document.querySelector('.toast'); if (old) old.remove();
-    const t = document.createElement('div'); t.className = 'toast' + (cls?' '+cls:''); t.textContent = msg;
-    document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+    var old = document.querySelector('.toast'); if (old) old.remove();
+    var t = document.createElement('div'); t.className = 'toast' + (cls?' '+cls:''); t.textContent = msg;
+    document.body.appendChild(t); setTimeout(function() { t.remove(); }, 3000);
 }
 function updateClock() { document.getElementById('clockDisplay').textContent = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
 setInterval(updateClock, 1000); updateClock();
-refresh(); renderInspection(); updateFreq();
+refresh();
+updateFreq();
 document.getElementById('liveTimer').textContent = '00:00:00';
 document.getElementById('liveTimer').style.color = 'var(--text-faint)';
-setTimeout(() => document.getElementById('matriculaInput').focus(), 300);
+setTimeout(function() { document.getElementById('matriculaInput').focus(); }, 300);
 </script>
 
 </body>
