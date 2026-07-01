@@ -1,0 +1,10 @@
+﻿setup_github.ps1
+push_to_github.ps1
+run_setup.bat
+run_setup_log.bat
+setup_log.txt
+.claude/
+Thumbs.db
+.DS_Store
+desktop.ini
+*.tmp
