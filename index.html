@@ -73,7 +73,27 @@
         .lb-suggest b { color: var(--blue); cursor: pointer; text-decoration: underline; }
 
         /* ═══ TIME / DOWNTIME STRIP ═══ */
-        .time-strip { background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 18px; display: flex; align-items: center; gap: 0; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; }
+        .time-strip { border-bottom: 1px solid var(--border); padding: 8px 18px; display: flex; align-items: center; gap: 0; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; transition: background .4s, color .4s; background: #7A2B2B; color: white; }
+        .time-strip.ts-running { background: #2E6B4F; }
+        .time-strip.ts-setup { background: #8B6914; }
+        .time-strip.ts-stopped { background: #7A2B2B; }
+        .time-strip .ts-label { color: rgba(255,255,255,.7); }
+        .time-strip .ts-value { color: white; }
+        .time-strip .ts-value.timer { color: white; }
+        .time-strip .ts-divider { background: rgba(255,255,255,.25); }
+        .time-strip .ts-pc-box { background: rgba(255,255,255,.18); box-shadow: none; }
+        .time-strip .btn { border-color: rgba(255,255,255,.25); }
+        .time-strip .btn-run { background: rgba(255,255,255,.12); color: white; border-color: rgba(255,255,255,.2); }
+        .time-strip .btn-run:hover { background: rgba(255,255,255,.22); }
+        .time-strip .btn-run.active { background: rgba(255,255,255,.3); }
+        .time-strip .btn-setup { background: rgba(255,255,255,.12); color: white; border-color: rgba(255,255,255,.2); }
+        .time-strip .btn-setup:hover { background: rgba(255,255,255,.22); }
+        .time-strip .btn-setup.active { background: rgba(255,255,255,.3); }
+        .time-strip .btn-stop { background: rgba(255,255,255,.12); color: white; border-color: rgba(255,255,255,.2); }
+        .time-strip .btn-stop:hover { background: rgba(255,255,255,.22); }
+        .time-strip .btn-stop.active { background: rgba(255,255,255,.3); }
+        .time-strip .btn-piece { background: rgba(255,255,255,.22); color: white; box-shadow: none; }
+        .time-strip .btn-piece:hover { background: rgba(255,255,255,.32); }
         body.locked .time-strip { display: none; }
         .ts-info { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
         .ts-block { display: flex; flex-direction: column; gap: 1px; }
@@ -367,7 +387,7 @@
     <div class="ts-info">
         <div class="ts-block">
             <span class="ts-label">Status da Máquina</span>
-            <span class="ts-value mono" id="jobStatus" style="font-size:15px;color:var(--red);"><span class="state-dot" style="background:var(--red);"></span>Parada</span>
+            <span class="ts-value mono" id="jobStatus" style="font-size:15px;"><span class="state-dot" style="background:white;"></span>Parada</span>
         </div>
         <div class="ts-divider"></div>
         <div class="ts-block"><span class="ts-label">Cronômetro</span><span class="ts-value timer mono" id="liveTimer">00:00:00</span></div>
@@ -376,8 +396,13 @@
         <div class="ts-divider"></div>
         <div class="ts-block">
             <span class="ts-label">Parada (Total)</span>
-            <span class="ts-value mono" id="downtimeTotal" style="font-size:15px;color:var(--red);">0min</span>
-            <span class="ts-label" id="downtimeReason" style="color:var(--text-soft);text-transform:none;font-size:9.5px;">—</span>
+            <span class="ts-value mono" id="downtimeTotal" style="font-size:15px;">0min</span>
+            <span class="ts-label" id="downtimeReason" style="text-transform:none;font-size:9.5px;">—</span>
+        </div>
+        <div class="ts-divider"></div>
+        <div class="ts-block">
+            <span class="ts-label">Tempo Padrão / Peça</span>
+            <span class="ts-value mono" id="cycleTimeDisplay" style="font-size:15px;">—</span>
         </div>
     </div>
     <div class="ts-piece-counter">
@@ -701,23 +726,24 @@ function loadBudget() {
     document.getElementById('hdOS').textContent = 'Orç. ' + budget.orcamento + ' · OP ' + budget.op;
 
     machineState = 'stopped';
-    stopStart = null;
+    stopStart = Date.now();
     totalDowntime = 0;
     setupElapsed = 0;
     cycleStart = null;
     if (timerInterval) clearInterval(timerInterval);
-    setJobStatus('Parada', 'var(--red)', 'var(--red)');
-    document.getElementById('liveTimer').textContent = '00:00:00';
-    document.getElementById('liveTimer').style.color = 'var(--text-faint)';
+    setJobStatus('Parada', 'ts-stopped');
+    startTimer(function() { return Date.now() - stopStart; });
     document.getElementById('setupCompare').textContent = '— / ' + budget.setupTime + 'min';
     document.getElementById('setupCompare').style.color = '';
     document.getElementById('downtimeTotal').textContent = '0min';
-    document.getElementById('downtimeReason').textContent = '—';
+    document.getElementById('downtimeReason').textContent = 'Aguardando início';
+    document.getElementById('cycleTimeDisplay').textContent = '—';
     document.getElementById('runBtn').classList.remove('active');
     document.getElementById('setupBtn').classList.remove('active');
     document.getElementById('setupBtn').innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup';
     document.getElementById('stopBtn').classList.remove('active');
     document.getElementById('stopBtn').innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Parar Máquina';
+    stateBeforeStop = 'producing';
 
     updatePieceDisplay();
     updatePanelContent(budget);
@@ -757,14 +783,16 @@ function updatePanelContent(b) {
 
 function fmtTime(ms) { const s = Math.floor(ms/1000); return String(Math.floor(s/3600)).padStart(2,'0') + ':' + String(Math.floor((s%3600)/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
 function fmtMin(ms) { return Math.round(ms/60000) + 'min'; }
-function setJobStatus(text, textColor, dotColor) {
+function setJobStatus(text, stateClass) {
     const el = document.getElementById('jobStatus');
-    el.innerHTML = '<span class="state-dot" style="background:' + dotColor + ';"></span>' + text;
-    el.style.color = textColor;
+    el.innerHTML = '<span class="state-dot" style="background:white;"></span>' + text;
+    const strip = document.getElementById('timeStrip');
+    strip.classList.remove('ts-running', 'ts-setup', 'ts-stopped');
+    strip.classList.add(stateClass);
 }
-function startTimer(fn, color) {
+function startTimer(fn) {
     if (timerInterval) clearInterval(timerInterval);
-    const t = document.getElementById('liveTimer'); t.style.color = color || 'var(--blue)';
+    const t = document.getElementById('liveTimer');
     timerInterval = setInterval(function() { t.textContent = fmtTime(fn()); }, 250);
 }
 
@@ -774,9 +802,9 @@ function runMachine() {
     document.getElementById('runBtn').classList.add('active');
     document.getElementById('setupBtn').classList.remove('active');
     setupRunning = false; document.getElementById('setupBtn').innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup';
-    setJobStatus('Produzindo', 'var(--green)', 'var(--green)');
+    setJobStatus('Produzindo', 'ts-running');
     cycleStart = cycleStart || Date.now();
-    startTimer(function() { return Date.now() - cycleStart; }, 'var(--green)');
+    startTimer(function() { return Date.now() - cycleStart; });
 }
 
 function toggleSetup() {
@@ -786,8 +814,8 @@ function toggleSetup() {
         setupRunning = true; setupStart = Date.now(); machineState = 'setup';
         btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; btn.classList.add('active');
         document.getElementById('runBtn').classList.remove('active');
-        setJobStatus('Em Setup', 'var(--yellow)', 'var(--yellow)');
-        startTimer(function() { return Date.now() - setupStart; }, 'var(--yellow)');
+        setJobStatus('Em Setup', 'ts-setup');
+        startTimer(function() { return Date.now() - setupStart; });
     } else {
         setupRunning = false; setupElapsed = Date.now() - setupStart;
         btn.innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup'; btn.classList.remove('active');
@@ -795,10 +823,10 @@ function toggleSetup() {
         var stdTime = currentBudget ? currentBudget.setupTime : 22;
         var sc = document.getElementById('setupCompare');
         sc.textContent = fmtMin(setupElapsed) + ' / ' + stdTime + 'min';
-        sc.style.color = real <= stdTime ? 'var(--green)' : 'var(--red)';
+        sc.style.color = real <= stdTime ? '#90EE90' : '#FF8A8A';
         machineState = 'producing'; document.getElementById('runBtn').classList.add('active');
-        setJobStatus('Produzindo', 'var(--green)', 'var(--green)');
-        cycleStart = Date.now(); startTimer(function() { return Date.now() - cycleStart; }, 'var(--green)');
+        setJobStatus('Produzindo', 'ts-running');
+        cycleStart = Date.now(); startTimer(function() { return Date.now() - cycleStart; });
         showToast('Setup finalizado: ' + fmtTime(setupElapsed), 'blue');
     }
 }
@@ -806,6 +834,10 @@ function toggleSetup() {
 function completePiece() {
     if (machineState === 'stopped' && stopStart) { showToast('Máquina parada — retome primeiro', 'red'); return; }
     if (machineState !== 'producing') runMachine();
+    if (cycleStart) {
+        var elapsed = Date.now() - cycleStart;
+        document.getElementById('cycleTimeDisplay').textContent = fmtTime(elapsed);
+    }
     cycleStart = Date.now();
     addPiece();
 }
@@ -833,13 +865,13 @@ function selectStopReason(reason) {
     }
     stateBeforeStop = (machineState === 'stopped') ? 'producing' : machineState;
     machineState = 'stopped'; stopStart = Date.now();
-    setJobStatus('PARADA', 'var(--red)', 'var(--red)');
+    setJobStatus('PARADA', 'ts-stopped');
     document.getElementById('downtimeReason').textContent = reason;
     document.getElementById('runBtn').classList.remove('active');
     document.getElementById('setupBtn').classList.remove('active');
     var btn = document.getElementById('stopBtn');
     btn.innerHTML = '<svg class="ic fill"><use href="#i-play"/></svg> Retomar Máquina'; btn.classList.add('active');
-    startTimer(function() { return Date.now() - stopStart; }, 'var(--red)');
+    startTimer(function() { return Date.now() - stopStart; });
     showToast('Máquina parada: ' + reason, 'red');
 }
 function resumeMachine() {
@@ -848,8 +880,8 @@ function resumeMachine() {
     var btn = document.getElementById('stopBtn');
     btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Parar Máquina'; btn.classList.remove('active');
     machineState = stateBeforeStop;
-    if (machineState === 'setup') { setupStart = Date.now(); setupRunning = true; document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; document.getElementById('setupBtn').classList.add('active'); setJobStatus('Em Setup','var(--yellow)','var(--yellow)'); startTimer(function(){return Date.now()-setupStart;},'var(--yellow)'); }
-    else { document.getElementById('runBtn').classList.add('active'); setJobStatus('Produzindo','var(--green)','var(--green)'); cycleStart = Date.now(); startTimer(function(){return Date.now()-cycleStart;},'var(--green)'); }
+    if (machineState === 'setup') { setupStart = Date.now(); setupRunning = true; document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; document.getElementById('setupBtn').classList.add('active'); setJobStatus('Em Setup','ts-setup'); startTimer(function(){return Date.now()-setupStart;}); }
+    else { document.getElementById('runBtn').classList.add('active'); setJobStatus('Produzindo','ts-running'); cycleStart = Date.now(); startTimer(function(){return Date.now()-cycleStart;}); }
     showToast('Máquina retomada · Parada total: ' + fmtMin(totalDowntime), 'blue');
 }
 
