@@ -119,7 +119,7 @@
         .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
         .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
         .tab-panel.active { display: flex; }
-        .op-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1.8fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
+        .op-grid { display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: 1.8fr 1fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
         .panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .ph { background: #F7F9FC; color: var(--blue-dark); padding: 10px 15px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 1px solid var(--border); }
         .ph-l { display: flex; align-items: center; gap: 8px; }
@@ -139,14 +139,14 @@
         .comment-card { background: var(--yellow-bg); border: 1px solid #F5D78E; border-left: 4px solid var(--yellow); border-radius: 0 10px 10px 0; padding: 11px 13px; font-size: 12.5px; line-height: 1.7; color: #5A4100; }
         .comment-card .ctitle { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #B45309; letter-spacing: .5px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
         .comment-card strong { color: #7A3E00; }
-        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px; align-content: center; }
-        .sup-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 14px; background: #F7F9FC; border-radius: 14px; cursor: pointer; transition: all .18s; border: 2px solid var(--border); position: relative; }
-        .sup-btn:hover { background: white; border-color: var(--teal); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,180,200,.2); }
+        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; align-content: center; }
+        .sup-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 10px 8px; background: #F7F9FC; border-radius: 10px; cursor: pointer; transition: all .18s; border: 1.5px solid var(--border); position: relative; }
+        .sup-btn:hover { background: white; border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,180,200,.15); }
         .sup-icon { color: var(--blue); display: flex; }
-        .sup-icon .ic { width: 36px; height: 36px; stroke-width: 1.6; }
-        .sup-label { font-size: 15px; font-weight: 700; color: var(--text); }
-        .sup-status { font-size: 11px; color: var(--text-soft); }
-        .sup-badge { position: absolute; top: 9px; right: 9px; background: var(--red); color: white; border-radius: 50%; width: 21px; height: 21px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(239,68,68,.4); }
+        .sup-icon .ic { width: 22px; height: 22px; stroke-width: 1.8; }
+        .sup-label { font-size: 11.5px; font-weight: 700; color: var(--text); }
+        .sup-status { font-size: 9.5px; color: var(--text-soft); }
+        .sup-badge { position: absolute; top: 5px; right: 5px; background: var(--red); color: white; border-radius: 50%; width: 17px; height: 17px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(239,68,68,.4); }
         .mag-layout { display: grid; grid-template-columns: 300px 1fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
         .lib-panel, .mac-panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .lib-head { background: #F7F9FC; color: var(--blue-dark); padding: 12px 15px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; }
@@ -411,6 +411,17 @@
 <!-- TAB PROCESSO -->
 <div class="tab-panel active" id="tab-processo">
     <div class="op-grid">
+        <!-- SETUP PDF (posição principal) -->
+        <div class="panel">
+            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Setup</span></div>
+            <div class="pb" id="setupContent" style="padding:0;overflow:hidden;">
+                <div class="doc-box">
+                    <div class="doc-icon"><svg class="ic"><use href="#i-message"/></svg></div>
+                    <div class="doc-name">Folha de Instrução</div>
+                    <div class="doc-sub">Carregue um orçamento para visualizar o setup</div>
+                </div>
+            </div>
+        </div>
         <!-- PROCESSO / PN -->
         <div class="panel">
             <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-file"/></svg></span> Processo · PN</span><span class="ph-badge" id="pnBadge">—</span></div>
@@ -422,17 +433,6 @@
                     <div class="doc-sub" id="docSub">Aguardando carregamento</div>
                 </div>
                 <div class="doc-nav"><button onclick="changePage(-1)">◀ Anterior</button><div class="page-pill mono" id="pageIndicator">Pg. 1 / —</div><button onclick="changePage(1)">Próxima ▶</button></div>
-            </div>
-        </div>
-        <!-- SETUP PDF -->
-        <div class="panel">
-            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Setup</span></div>
-            <div class="pb" id="setupContent" style="padding:0;overflow:hidden;">
-                <div class="doc-box">
-                    <div class="doc-icon"><svg class="ic"><use href="#i-message"/></svg></div>
-                    <div class="doc-name">Folha de Instrução</div>
-                    <div class="doc-sub">Carregue um orçamento para visualizar o setup</div>
-                </div>
             </div>
         </div>
         <!-- COTAS CRÍTICAS PDF -->
