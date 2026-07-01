@@ -13,7 +13,7 @@
             --red: #EF4444; --red-bg: #FDECEC; --bg: #EEF2F6; --surface: #FFFFFF;
             --border: #DDE3EB; --text: #1F2933; --text-soft: #6B7785; --text-faint: #9AA5B1;
         }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
         .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
 
         .ic { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.18em; flex-shrink: 0; }
@@ -43,14 +43,14 @@
         .login-foot .sd { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
 
         /* ═══ HEADER ═══ */
-        .header { background: linear-gradient(100deg, var(--blue-deep) 0%, var(--blue) 55%, var(--teal-dark) 130%); color: white; height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 2px 12px rgba(13,71,161,.28); z-index: 20; }
+        .header { background: linear-gradient(100deg, var(--blue-deep) 0%, var(--blue) 55%, var(--teal-dark) 130%); color: white; height: 90px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 2px 12px rgba(13,71,161,.28); z-index: 20; }
         .hd-left { display: flex; align-items: center; gap: 14px; }
         .hd-logo { background: white; border-radius: 9px; padding: 5px 11px; display: flex; align-items: center; }
-        .hd-logo img { height: 30px; width: auto; display: block; }
-        .hd-title { font-size: 22px; font-weight: 700; letter-spacing: .2px; }
+        .hd-logo img { height: 45px; width: auto; display: block; }
+        .hd-title { font-size: 30px; font-weight: 700; letter-spacing: .2px; }
         .hd-right { display: flex; align-items: center; gap: 9px; }
-        .chip { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 7px; }
-        .chip.os { background: white; color: var(--blue-dark); border: none; font-size: 13.5px; letter-spacing: .3px; font-weight: 700; }
+        .chip { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 8px 18px; font-size: 14px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 7px; }
+        .chip.os { background: white; color: var(--blue-dark); border: none; font-size: 16px; letter-spacing: .3px; font-weight: 700; }
         .chip.os.empty { background: rgba(255,255,255,.16); color: rgba(255,255,255,.75); }
         .chip.clickable { cursor: pointer; transition: background .15s; }
         .chip.clickable:hover { background: rgba(255,255,255,.28); }
@@ -73,7 +73,7 @@
         .lb-suggest b { color: var(--blue); cursor: pointer; text-decoration: underline; }
 
         /* ═══ TIME / DOWNTIME STRIP ═══ */
-        .time-strip { border-bottom: 1px solid var(--border); padding: 8px 18px; display: flex; align-items: center; gap: 0; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; transition: background .4s, color .4s; background: #7A2B2B; color: white; }
+        .time-strip { border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 0; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.04); z-index: 15; transition: background .4s, color .4s; background: #7A2B2B; color: white; }
         .time-strip.ts-running { background: #2E6B4F; }
         .time-strip.ts-setup { background: #8B6914; }
         .time-strip.ts-stopped { background: #7A2B2B; }
@@ -97,17 +97,17 @@
         body.locked .time-strip { display: none; }
         .ts-info { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
         .ts-block { display: flex; flex-direction: column; gap: 1px; }
-        .ts-label { font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-faint); font-weight: 700; white-space: nowrap; }
-        .ts-value { font-size: 16px; font-weight: 700; line-height: 1.1; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
-        .ts-value.timer { color: var(--blue); font-size: 19px; }
+        .ts-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-faint); font-weight: 700; white-space: nowrap; }
+        .ts-value { font-size: 20px; font-weight: 700; line-height: 1.1; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+        .ts-value.timer { color: var(--blue); font-size: 26px; }
         .state-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         .ts-divider { width: 1px; height: 32px; background: var(--border); margin: 0 14px; }
         .ts-piece-counter { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .ts-pc-box { background: linear-gradient(135deg, var(--blue), var(--teal-dark)); color: white; padding: 6px 28px; border-radius: 12px; text-align: center; box-shadow: 0 3px 12px rgba(21,101,192,.25); }
-        .ts-pc-val { font-size: 26px; font-weight: 800; line-height: 1.15; }
-        .ts-pc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; font-weight: 600; }
+        .ts-pc-val { font-size: 34px; font-weight: 800; line-height: 1.15; }
+        .ts-pc-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; font-weight: 600; }
         .ts-btns { flex-shrink: 0; display: flex; gap: 7px; }
-        .btn { padding: 9px 15px; border: none; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 7px; font-family: inherit; white-space: nowrap; }
+        .btn { padding: 12px 18px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 7px; font-family: inherit; white-space: nowrap; }
         .btn:active { transform: scale(.97); }
         .btn-run { background: var(--green-bg); color: #15803D; border: 1.5px solid #86E0AB; }
         .btn-run:hover { background: #D6F5E2; }
@@ -136,11 +136,12 @@
         @keyframes alertPulse { 0%,100%{background:var(--yellow)} 50%{background:#FBB938} }
         #alertBar .ab-link { text-decoration: underline; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
-        .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-        .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+        .content { flex: 1; overflow: auto; display: flex; flex-direction: column; }
+        .tab-panel { display: none; flex: 1; flex-direction: column; }
         .tab-panel.active { display: flex; }
-        .op-grid { display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: 1.8fr 1fr; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
-        .panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .op-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; padding: 10px; }
+        .panel { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-height: 420px; }
+        .panel.panel-tall { min-height: 550px; }
         .ph { background: #F7F9FC; color: var(--blue-dark); padding: 10px 15px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 1px solid var(--border); }
         .ph-l { display: flex; align-items: center; gap: 8px; }
         .ph-icon { color: var(--teal-dark); display: flex; }
@@ -159,6 +160,28 @@
         .comment-card { background: var(--yellow-bg); border: 1px solid #F5D78E; border-left: 4px solid var(--yellow); border-radius: 0 10px 10px 0; padding: 11px 13px; font-size: 12.5px; line-height: 1.7; color: #5A4100; }
         .comment-card .ctitle { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #B45309; letter-spacing: .5px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
         .comment-card strong { color: #7A3E00; }
+
+        /* ═══ HISTÓRICO / ANOTAÇÕES ═══ */
+        .hist-list { display: flex; flex-direction: column; gap: 10px; }
+        .hist-entry { background: #F7F9FC; border: 1px solid var(--border); border-left: 4px solid var(--blue); border-radius: 0 10px 10px 0; padding: 12px 14px; }
+        .hist-entry.hist-warn { border-left-color: var(--yellow); }
+        .hist-entry.hist-err { border-left-color: var(--red); }
+        .hist-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .hist-date { font-size: 11px; font-weight: 800; color: var(--blue-dark); display: flex; align-items: center; gap: 6px; }
+        .hist-date .ic { width: 14px; height: 14px; }
+        .hist-op { font-size: 10.5px; color: var(--text-soft); font-weight: 600; }
+        .hist-body { font-size: 12.5px; line-height: 1.65; color: var(--text); }
+        .hist-body li { margin-left: 14px; margin-bottom: 2px; }
+        .hist-tag { display: inline-block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+        .hist-tag.tag-eng { background: #E8F0FE; color: #1A56DB; }
+        .hist-tag.tag-stop { background: #FDECEC; color: #B91C1C; }
+        .hist-tag.tag-tool { background: #FEF6E7; color: #B45309; }
+        .hist-tag.tag-note { background: #E8F7EE; color: #15803D; }
+        .hist-add { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+        .hist-input { flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; resize: none; }
+        .hist-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(21,101,192,.1); }
+        .hist-send { padding: 10px 18px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .hist-send:hover { background: var(--blue-dark); }
         .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; align-content: center; }
         .sup-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 10px 8px; background: #F7F9FC; border-radius: 10px; cursor: pointer; transition: all .18s; border: 1.5px solid var(--border); position: relative; }
         .sup-btn:hover { background: white; border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,180,200,.15); }
@@ -421,7 +444,7 @@
 
 <!-- ═══ TABS ═══ -->
 <nav class="nav">
-    <div class="tab active" onclick="switchTab(this,'processo')"><svg class="ic"><use href="#i-file"/></svg> Processo</div>
+    <div class="tab active" onclick="switchTab(this,'processo')"><svg class="ic"><use href="#i-file"/></svg> Processo / Histórico</div>
     <div class="tab" onclick="switchTab(this,'magazine')"><svg class="ic"><use href="#i-tool"/></svg> Magazine Virtual</div>
     <div class="tab" onclick="switchTab(this,'inspecao')"><svg class="ic"><use href="#i-ruler"/></svg> Inspeção Volante <span class="tab-badge" id="inspTabBadge" style="display:none;">!</span></div>
 </nav>
@@ -437,7 +460,7 @@
 <div class="tab-panel active" id="tab-processo">
     <div class="op-grid">
         <!-- SETUP PDF (posição principal) -->
-        <div class="panel">
+        <div class="panel panel-tall">
             <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Setup</span></div>
             <div class="pb" id="setupContent" style="padding:0;overflow:hidden;">
                 <div class="doc-box">
@@ -447,21 +470,19 @@
                 </div>
             </div>
         </div>
-        <!-- PROCESSO / PN -->
-        <div class="panel">
-            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-file"/></svg></span> Processo · PN</span><span class="ph-badge" id="pnBadge">—</span></div>
-            <div class="pb" style="display:flex;flex-direction:column;gap:11px;">
-                <div class="doc-box" style="flex:1;" id="docBox">
-                    <div class="doc-icon"><svg class="ic"><use href="#i-file"/></svg></div>
-                    <div class="doc-name" id="docName">Carregue um orçamento</div>
-                    <div class="doc-prod" id="docProd">—</div>
-                    <div class="doc-sub" id="docSub">Aguardando carregamento</div>
+        <!-- HISTÓRICO E ANOTAÇÕES -->
+        <div class="panel panel-tall">
+            <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-message"/></svg></span> Histórico e Anotações</span><span class="ph-badge" id="pnBadge">—</span></div>
+            <div class="pb" id="histContent" style="overflow-y:auto;">
+                <div class="doc-box" id="histEmpty">
+                    <div class="doc-icon"><svg class="ic"><use href="#i-message"/></svg></div>
+                    <div class="doc-name">Histórico de Produção</div>
+                    <div class="doc-sub">Carregue um orçamento para ver o histórico</div>
                 </div>
-                <div class="doc-nav"><button onclick="changePage(-1)">◀ Anterior</button><div class="page-pill mono" id="pageIndicator">Pg. 1 / —</div><button onclick="changePage(1)">Próxima ▶</button></div>
             </div>
         </div>
         <!-- COTAS CRÍTICAS PDF -->
-        <div class="panel">
+        <div class="panel panel-tall">
             <div class="ph"><span class="ph-l"><span class="ph-icon"><svg class="ic"><use href="#i-ruler"/></svg></span> Cotas Críticas</span></div>
             <div class="pb" id="inspPlanContent" style="padding:0;overflow:hidden;">
                 <div class="doc-box">
@@ -633,6 +654,12 @@ const BUDGETS = {
             { id:'05', nom:'R3.0 ±0.5', tol:'2.5 ~ 3.5', min:2.5, max:3.5 },
             { id:'06', nom:'30.0 ±0.15', tol:'29.85 ~ 30.15', min:29.85, max:30.15 },
         ],
+        historico: [
+            { data:'15/06/2026', op:'1220', nome:'Gustavo de Melo', tipo:'eng', items:['Ajuste de engenharia — deslocamento de 0.15mm no eixo B confirmado após medição com relógio comparador','Parede vibrada na cota 22.50 ±0.05 — reduzir avanço de 800 para 550mm/min no desbaste','Programa alterado: bloco N1450 corrigido para Z-22.50'] },
+            { data:'02/06/2026', op:'975', nome:'Zaqueu', tipo:'tool', items:['Troca de ferramenta T03 (Fresa Ø12) — desgaste excessivo na aresta 2, trocada na peça 8/12','Atenção: ferramenta tem que ser aliviada 0.02mm no diâmetro para não forçar na entrada do furo'] },
+            { data:'19/05/2026', op:'1117', nome:'Edson Pereira', tipo:'note', items:['Passar relógio 90° no eixo C para conferir alinhamento antes de iniciar ciclo','Morsa Lang com folga lateral — apertar parafuso de regulagem antes de fixar peça','Peças 1 a 6 aprovadas sem retrabalho'] },
+            { data:'03/05/2026', op:'1220', nome:'Gustavo de Melo', tipo:'stop', items:['Parada por falta de matéria-prima — alumínio 7075 T6 em falta no estoque por 2h','Retomada às 10:30 após recebimento do almoxarifado','Lote finalizado: 12/12 peças aprovadas'] },
+        ],
     },
     '004120': {
         orcamento: '41/20', op: 40, pieces: 1,
@@ -651,6 +678,12 @@ const BUDGETS = {
             { id:'07', nom:'Ø8.0 H7', tol:'8.000 ~ 8.015', min:8.000, max:8.015 },
             { id:'08', nom:'62.50 ±0.05', tol:'62.45 ~ 62.55', min:62.45, max:62.55 },
         ],
+        historico: [
+            { data:'20/06/2026', op:'1117', nome:'Edson Pereira', tipo:'eng', items:['Ajuste engenharia — rebaixo da face inferior alterado de 3.0mm para 2.8mm conforme revisão 005','Ciclo de medição automático no programa OK — offset Z recalibrado'] },
+            { data:'08/06/2026', op:'1220', nome:'Gustavo de Melo', tipo:'stop', items:['Parada: vibração excessiva no desbaste da cavidade central (cota 120.00 ±0.05)','Solução: reduzir profundidade de corte de 2mm para 1.2mm e aumentar rotação para 8500 RPM','Peça salva — sem refugo'] },
+            { data:'25/05/2026', op:'975', nome:'Zaqueu', tipo:'tool', items:['Troca emergencial T07 (Broca Ø8 H7) — quebra durante furação do 3º furo','Causa: cavaco enrolado no canal — verificar pressão do coolant antes de furar','Novo inserto montado e conferido com preset'] },
+            { data:'10/05/2026', op:'1117', nome:'Edson Pereira', tipo:'note', items:['ATENÇÃO: peça única, não há margem para refugo — conferir TODOS os offsets antes do 1º corte','Dispositivo 5 eixos precisa de 15min para aquecer e estabilizar','Grampos escalonados: torque 35 N·m, não ultrapassar'] },
+        ],
     },
     '552515': {
         orcamento: '5525/15', op: 65, pieces: 8,
@@ -667,6 +700,12 @@ const BUDGETS = {
             { id:'05', nom:'R2.0 ±0.3', tol:'1.7 ~ 2.3', min:1.7, max:2.3 },
             { id:'06', nom:'75.0 ±0.1', tol:'74.9 ~ 75.1', min:74.9, max:75.1 },
             { id:'07', nom:'Ø12.0 H7', tol:'12.000 ~ 12.018', min:12.000, max:12.018 },
+        ],
+        historico: [
+            { data:'22/06/2026', op:'975', nome:'Zaqueu', tipo:'tool', items:['Troca de ferramenta T05 (Fresa Topo Ø10) — vida útil atingida após peça 6/8','Inserto novo apresentou run-out de 0.03mm — recalibrar no preset antes de usar','Acabamento superficial OK após troca — Ra 1.6 conforme especificado'] },
+            { data:'11/06/2026', op:'1220', nome:'Gustavo de Melo', tipo:'eng', items:['Ajuste engenharia — ângulo de posicionamento do contra-ponto alterado em 0.5°','Programa 55251506 atualizado: bloco N2200 modificado para compensar novo alinhamento','Batimento TIR medido: 0.015mm (dentro do limite de 0.02mm)'] },
+            { data:'28/05/2026', op:'1117', nome:'Edson Pereira', tipo:'stop', items:['Parada: castanhas moles com marca de desgaste — peça escorregou durante desbaste','Usinagem de novas castanhas realizada em 40min','Contra-ponto com pressão ajustada para média — marca do centro OK'] },
+            { data:'14/05/2026', op:'975', nome:'Zaqueu', tipo:'note', items:['Sobremetal de 0.3mm para acabamento final no centro de usinagem confirmado','Peças 1 a 4 enviadas para CMM — todas dentro da tolerância','Próximo lote: verificar se castanhas ainda estão dentro da vida útil'] },
         ],
     },
 };
@@ -762,10 +801,6 @@ function updatePieceDisplay() {
 
 function updatePanelContent(b) {
     document.getElementById('pnBadge').textContent = b.pn;
-    document.getElementById('docName').textContent = b.pn + ' · Rev.' + b.rev;
-    document.getElementById('docProd').textContent = b.desc + ' — MAZAK';
-    document.getElementById('docSub').textContent = 'Orçamento ' + b.orcamento + ' · ' + b.pages + ' páginas · Programa: ' + b.program;
-    document.getElementById('pageIndicator').textContent = 'Pg. 1 / ' + b.pages;
 
     var pdfKey = Object.keys(BUDGETS).find(function(k) { return BUDGETS[k] === b; });
     document.getElementById('setupContent').innerHTML =
@@ -774,11 +809,45 @@ function updatePanelContent(b) {
     document.getElementById('inspPlanContent').innerHTML =
         '<iframe src="pdfs/' + pdfKey + '.pdf#page=' + b.inspPage + '" style="width:100%;height:100%;border:none;"></iframe>';
 
+    renderHistory(b);
+
     document.getElementById('inspFreqHeader').innerHTML = '<svg class="ic"><use href="#i-chart"/></svg> Controle de Frequência — OP ' + b.op;
     document.getElementById('inspVolHeader').innerHTML = '<svg class="ic"><use href="#i-ruler"/></svg> Inspeção Volante — ' + b.client + ' · ' + b.desc.split('—')[0].trim();
     document.getElementById('inspVolInfo').textContent = 'PN ' + b.pn + ' · Rev.' + b.rev + ' · Programa: ' + b.program + ' · Instrumentos: Paquímetro, Micrômetro, Calibrador de Raio';
 
     renderInspection(b.cotas);
+}
+
+function renderHistory(b) {
+    var c = document.getElementById('histContent');
+    var tagMap = { eng:'tag-eng', stop:'tag-stop', tool:'tag-tool', note:'tag-note' };
+    var tagLabel = { eng:'Engenharia', stop:'Parada', tool:'Ferramenta', note:'Anotação' };
+    var entryClass = { eng:'', stop:'hist-err', tool:'hist-warn', note:'' };
+    var html = '<div class="hist-list">';
+    (b.historico || []).forEach(function(h) {
+        html += '<div class="hist-entry ' + (entryClass[h.tipo]||'') + '">';
+        html += '<div class="hist-head"><span class="hist-date"><svg class="ic"><use href="#i-clock"/></svg> ' + h.data + '</span><span class="hist-op">' + h.op + ' · ' + h.nome + '</span></div>';
+        html += '<div class="hist-body"><span class="hist-tag ' + (tagMap[h.tipo]||'') + '">' + (tagLabel[h.tipo]||'') + '</span>';
+        html += '<ul>';
+        h.items.forEach(function(item) { html += '<li>' + item + '</li>'; });
+        html += '</ul></div></div>';
+    });
+    html += '</div>';
+    html += '<div class="hist-add"><textarea class="hist-input" id="histNewComment" rows="2" placeholder="Adicionar anotação..."></textarea>';
+    html += '<button class="hist-send" onclick="addHistoryComment()"><svg class="ic"><use href="#i-arrow"/></svg> Enviar</button></div>';
+    c.innerHTML = html;
+}
+function addHistoryComment() {
+    var txt = document.getElementById('histNewComment').value.trim();
+    if (!txt || !currentBudget) return;
+    var now = new Date();
+    var dateStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+    var opName = currentOperatorMat ? OPERATORS[currentOperatorMat] : 'Operador';
+    var opMat = currentOperatorMat || '—';
+    currentBudget.historico = currentBudget.historico || [];
+    currentBudget.historico.unshift({ data: dateStr, op: opMat, nome: opName, tipo:'note', items:[txt] });
+    renderHistory(currentBudget);
+    showToast('Anotação registrada', 'blue');
 }
 
 function fmtTime(ms) { const s = Math.floor(ms/1000); return String(Math.floor(s/3600)).padStart(2,'0') + ':' + String(Math.floor((s%3600)/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
