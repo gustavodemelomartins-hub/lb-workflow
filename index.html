@@ -413,8 +413,8 @@
         </div>
         <div class="ts-divider"></div>
         <div class="ts-block"><span class="ts-label">Cronômetro</span><span class="ts-value timer mono" id="liveTimer">00:00:00</span></div>
-        <div class="ts-divider"></div>
-        <div class="ts-block"><span class="ts-label">Setup · Real / Padrão</span><span class="ts-value mono" id="setupCompare" style="font-size:15px;">— / —</span></div>
+        <div class="ts-divider" id="setupDivider" style="display:none;"></div>
+        <div class="ts-block" id="setupCompareBlock" style="display:none;"><span class="ts-label">Setup · Real / Padrão</span><span class="ts-value mono" id="setupCompare" style="font-size:15px;">— / —</span></div>
         <div class="ts-divider"></div>
         <div class="ts-block">
             <span class="ts-label">Parada (Total)</span>
@@ -709,7 +709,7 @@ let draggedTool = null, pieceCount = 0, currentPage = 1;
 let totalPages = 1;
 let machineState = 'stopped', stateBeforeStop = 'producing';
 let setupRunning = false, setupStart = null, setupElapsed = 0;
-let cycleStart = null, stopStart = null, totalDowntime = 0, timerInterval = null;
+let cycleStart = null, cycleElapsed = 0, stopStart = null, totalDowntime = 0, timerInterval = null;
 let currentBudget = null;
 let currentOperatorMat = null;
 
@@ -763,8 +763,10 @@ function loadBudget() {
     totalDowntime = 0;
     setupElapsed = 0;
     cycleStart = null;
+    cycleElapsed = 0;
     if (timerInterval) clearInterval(timerInterval);
     setJobStatus('Parada', 'ts-stopped');
+    showSetupBlock(false);
     startTimer(function() { return Date.now() - stopStart; });
     document.getElementById('setupCompare').textContent = '— / ' + budget.setupTime + 'min';
     document.getElementById('setupCompare').style.color = '';
@@ -853,6 +855,11 @@ function setJobStatus(text, stateClass) {
     strip.classList.remove('ts-running', 'ts-setup', 'ts-stopped');
     strip.classList.add(stateClass);
 }
+function showSetupBlock(show) {
+    var d = show ? '' : 'none';
+    document.getElementById('setupCompareBlock').style.display = d;
+    document.getElementById('setupDivider').style.display = d;
+}
 function startTimer(fn) {
     if (timerInterval) clearInterval(timerInterval);
     const t = document.getElementById('liveTimer');
@@ -866,18 +873,23 @@ function runMachine() {
     document.getElementById('setupBtn').classList.remove('active');
     setupRunning = false; document.getElementById('setupBtn').innerHTML = '<svg class="ic"><use href="#i-tool"/></svg> Iniciar Setup';
     setJobStatus('Produzindo', 'ts-running');
-    cycleStart = cycleStart || Date.now();
-    startTimer(function() { return Date.now() - cycleStart; });
+    showSetupBlock(false);
+    cycleStart = Date.now();
+    startTimer(function() { return cycleElapsed + (Date.now() - cycleStart); });
 }
 
 function toggleSetup() {
     if (machineState === 'stopped' && stopStart) { showToast('Retome a máquina primeiro', 'red'); return; }
     var btn = document.getElementById('setupBtn');
     if (!setupRunning) {
+        if (machineState === 'producing' && cycleStart) {
+            cycleElapsed += Date.now() - cycleStart; cycleStart = null;
+        }
         setupRunning = true; setupStart = Date.now(); machineState = 'setup';
         btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; btn.classList.add('active');
         document.getElementById('runBtn').classList.remove('active');
         setJobStatus('Em Setup', 'ts-setup');
+        showSetupBlock(true);
         startTimer(function() { return Date.now() - setupStart; });
     } else {
         setupRunning = false; setupElapsed = Date.now() - setupStart;
@@ -889,7 +901,9 @@ function toggleSetup() {
         sc.style.color = real <= stdTime ? '#90EE90' : '#FF8A8A';
         machineState = 'producing'; document.getElementById('runBtn').classList.add('active');
         setJobStatus('Produzindo', 'ts-running');
-        cycleStart = Date.now(); startTimer(function() { return Date.now() - cycleStart; });
+        showSetupBlock(true);
+        cycleStart = Date.now();
+        startTimer(function() { return cycleElapsed + (Date.now() - cycleStart); });
         showToast('Setup finalizado: ' + fmtTime(setupElapsed), 'blue');
     }
 }
@@ -897,11 +911,13 @@ function toggleSetup() {
 function completePiece() {
     if (machineState === 'stopped' && stopStart) { showToast('Máquina parada — retome primeiro', 'red'); return; }
     if (machineState !== 'producing') runMachine();
-    if (cycleStart) {
-        var elapsed = Date.now() - cycleStart;
-        document.getElementById('cycleTimeDisplay').textContent = fmtTime(elapsed);
+    var totalCycle = cycleElapsed + (cycleStart ? (Date.now() - cycleStart) : 0);
+    if (totalCycle > 0) {
+        document.getElementById('cycleTimeDisplay').textContent = fmtTime(totalCycle);
     }
+    cycleElapsed = 0;
     cycleStart = Date.now();
+    startTimer(function() { return Date.now() - cycleStart; });
     addPiece();
 }
 
@@ -927,8 +943,15 @@ function selectStopReason(reason) {
         return;
     }
     stateBeforeStop = (machineState === 'stopped') ? 'producing' : machineState;
+    if (machineState === 'producing' && cycleStart) {
+        cycleElapsed += Date.now() - cycleStart; cycleStart = null;
+    }
+    if (machineState === 'setup' && setupStart) {
+        setupElapsed += Date.now() - setupStart; setupStart = null;
+    }
     machineState = 'stopped'; stopStart = Date.now();
     setJobStatus('PARADA', 'ts-stopped');
+    showSetupBlock(false);
     document.getElementById('downtimeReason').textContent = reason;
     document.getElementById('runBtn').classList.remove('active');
     document.getElementById('setupBtn').classList.remove('active');
@@ -943,8 +966,20 @@ function resumeMachine() {
     var btn = document.getElementById('stopBtn');
     btn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg> Parar Máquina'; btn.classList.remove('active');
     machineState = stateBeforeStop;
-    if (machineState === 'setup') { setupStart = Date.now(); setupRunning = true; document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup'; document.getElementById('setupBtn').classList.add('active'); setJobStatus('Em Setup','ts-setup'); startTimer(function(){return Date.now()-setupStart;}); }
-    else { document.getElementById('runBtn').classList.add('active'); setJobStatus('Produzindo','ts-running'); cycleStart = Date.now(); startTimer(function(){return Date.now()-cycleStart;}); }
+    if (machineState === 'setup') {
+        setupStart = Date.now(); setupRunning = true;
+        document.getElementById('setupBtn').innerHTML='<svg class="ic"><use href="#i-pause"/></svg> Finalizar Setup';
+        document.getElementById('setupBtn').classList.add('active');
+        setJobStatus('Em Setup','ts-setup');
+        showSetupBlock(true);
+        startTimer(function(){ return setupElapsed + (Date.now()-setupStart); });
+    } else {
+        document.getElementById('runBtn').classList.add('active');
+        setJobStatus('Produzindo','ts-running');
+        showSetupBlock(false);
+        cycleStart = Date.now();
+        startTimer(function(){ return cycleElapsed + (Date.now()-cycleStart); });
+    }
     showToast('Máquina retomada · Parada total: ' + fmtMin(totalDowntime), 'blue');
 }
 
