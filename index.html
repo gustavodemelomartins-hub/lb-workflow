@@ -95,12 +95,23 @@
   .oee-ring>div{width:72%;height:72%;border-radius:50%;background:rgba(12,28,54,.42);display:flex;flex-direction:column;align-items:center;justify-content:center}
   .oee-ring .n{font-weight:800;font-size:calc(19px*var(--numScale));line-height:1}
   .oee .mini{display:flex;justify-content:space-between;font:700 9px "Segoe UI";opacity:.9}
-  .strip-actions{padding:14px 22px;background:rgba(0,0,0,.16);border-top:1px solid rgba(255,255,255,.16);display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .strip-actions{padding:14px 22px;background:rgba(0,0,0,.16);border-top:1px solid rgba(255,255,255,.16);display:grid;grid-template-columns:1fr 1fr 1.6fr .58fr;gap:12px}
   .sa{height:58px;border-radius:13px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.17);color:#fff;font:800 14px "Segoe UI";display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.28)}
-  .sa:hover{background:rgba(255,255,255,.3)}.sa.on{background:rgba(255,255,255,.34);box-shadow:0 0 0 2px rgba(255,255,255,.5) inset}
+  .sa:hover{background:rgba(255,255,255,.3)}
+  .sa.run{background:linear-gradient(135deg,#1EBE5A,#12924A);border-color:rgba(255,255,255,.55);box-shadow:0 5px 14px rgba(30,190,90,.32),inset 0 1px 0 rgba(255,255,255,.3)}
+  .sa.run:hover{background:linear-gradient(135deg,#25c964,#149a4f)}
+  .sa.stopbtn{background:linear-gradient(135deg,#F5334E,#D01E1E);border-color:rgba(255,255,255,.55);box-shadow:0 5px 14px rgba(208,30,30,.32),inset 0 1px 0 rgba(255,255,255,.3)}
+  .sa.stopbtn:hover{background:linear-gradient(135deg,#ff4159,#e02222)}
+  .sa.on{box-shadow:0 0 0 3px rgba(255,255,255,.75) inset,0 5px 14px rgba(0,0,0,.28)}
   .sa.piece{background:#fff;color:var(--accD);border:1px solid #fff;box-shadow:0 5px 14px rgba(0,0,0,.24)}
   .sa.piece:hover{background:#F1F6FF}
-  .sa.scrap{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.55)}.sa.scrap:hover{background:rgba(0,0,0,.3)}
+  .sa.scrap{background:linear-gradient(135deg,#3A1114,#210A0C);border:1px solid rgba(255,255,255,.28);color:#FF9E9E;font-size:12.5px;gap:7px}
+  .sa.scrap:hover{background:linear-gradient(135deg,#4A171B,#2C0E10)}
+  .st-reason-text{font:800 15px "Segoe UI";color:#fff;line-height:1.25;max-width:250px}
+  .dt-link{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:2px 4px;margin:0 -4px;border-radius:6px;font:700 8.5px "Segoe UI";letter-spacing:1px;text-transform:uppercase}
+  .dt-link:hover{background:rgba(255,255,255,.16)}
+  .dt-link .lab{opacity:.82;display:flex;align-items:center;gap:4px}
+  .dt-link .val{font:800 13px "Segoe UI";letter-spacing:.5px;opacity:1;text-transform:none}
 
   /* ═══ SUPPORT ROW ═══ */
   .support{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -258,6 +269,29 @@
   .cota input.ok{border-color:var(--green);background:#E8F7EE;color:#15803D}
   .cota input.nok{border-color:var(--red);background:#FDECEC;color:#B91C1C}
 
+  /* ═══ PARADAS — BALÕES DE GIBI ═══ */
+  .dt-modal{max-width:520px}
+  #dtBody{gap:0}
+  .dt-intro{font:600 11.5px "Segoe UI";color:var(--faint);margin-bottom:4px}
+  .dt-bubble{position:relative;background:#fff;border:2.5px solid var(--accD);border-radius:16px;padding:11px 14px 12px;margin:16px 0 6px 14px;box-shadow:3px 3px 0 rgba(8,48,107,.14)}
+  .dt-bubble::before{content:'';position:absolute;left:-14px;top:16px;width:0;height:0;border:9px solid transparent;border-right-color:var(--accD);border-left:0}
+  .dt-bubble::after{content:'';position:absolute;left:-10px;top:18px;width:0;height:0;border:7px solid transparent;border-right-color:#fff;border-left:0}
+  .dt-bubble.live{border-color:var(--amber);box-shadow:3px 3px 0 rgba(217,119,6,.18)}
+  .dt-bubble.live::before{border-right-color:var(--amber)}
+  .dt-bubble .dt-top{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .dt-bubble .dt-dur{font:800 16px "Segoe UI";color:var(--accD)}
+  .dt-bubble.live .dt-dur{color:var(--amber)}
+  .dt-bubble .dt-badge{font:800 8.5px "Segoe UI";letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:6px;color:#065F6C;background:#E6F7FA}
+  .dt-bubble.live .dt-badge{color:#B45309;background:#FEF3C7;display:inline-flex;align-items:center;gap:5px}
+  .dt-bubble.live .dt-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 1.4s infinite}
+  .dt-bubble .dt-when{margin-left:auto;font:600 10.5px "Segoe UI";color:var(--faint)}
+  .dt-bubble .dt-mlabel{font:700 8.5px "Segoe UI";letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .dt-bubble select{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:9px;font:700 12.5px "Segoe UI";color:var(--text);cursor:pointer;background:#F7F9FC}
+  .dt-bubble select:focus{outline:none;border-color:var(--acc1)}
+  .dt-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px 15px;border-radius:12px;background:linear-gradient(135deg,#08306B,#1565C0);color:#fff}
+  .dt-total b{font:800 12px "Segoe UI";letter-spacing:.5px}
+  .dt-total .n{font:800 20px "Segoe UI"}
+
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accD);color:#fff;padding:13px 22px;border-radius:12px;font:700 13.5px "Segoe UI";box-shadow:0 12px 34px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:all .25s;z-index:4000;display:flex;align-items:center;gap:9px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast.red{background:#B91C1C}.toast.green{background:#15803D}.toast.amber{background:#B45309}
@@ -322,16 +356,16 @@
       <div class="vdiv"></div>
       <div class="st-reason" id="stReasonWrap" style="display:none">
         <div class="st-cap">Motivo da parada</div>
-        <select id="stReason" onchange="pickReason(this.value)"></select>
+        <div class="st-reason-text" id="stReasonText">—</div>
       </div>
       <div class="vdiv" id="stReasonDiv" style="display:none"></div>
       <div class="metrics">
-        <div class="metric"><span class="k">Peças usinadas</span><span class="v tnum" id="mPieces">0</span></div>
+        <div class="metric"><span class="k">Peças usinadas</span><span class="v tnum" id="mPieces">0/0</span></div>
         <div class="metric"><span class="k">Refugo</span><span class="v tnum" id="mScrap" style="color:#FFC9C9">0</span></div>
         <div class="metric">
           <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="k">Ciclo</span><span class="tnum" style="font:800 15px 'Segoe UI'" id="mCycle">0m 00s</span></div>
           <div class="bar"><i id="mCycleBar" style="width:0%;background:rgba(255,255,255,.92)"></i></div>
-          <div style="display:flex;justify-content:space-between;font:700 8.5px 'Segoe UI';opacity:.78;letter-spacing:1px;text-transform:uppercase"><span>Planejado</span><span class="tnum" id="mCyclePlan">4m 30s</span></div>
+          <div class="dt-link" onclick="openDowntime()" title="Ver e editar paradas registradas"><span class="lab">Parada total <span style="font-size:11px">▾</span></span><span class="val tnum" id="mDownTotal">00:00:00</span></div>
         </div>
         <div class="metric oee">
           <div class="oee-ring" id="oeeRing"><div><span class="n tnum" id="oeeN">0%</span><span style="font:800 7px 'Segoe UI';letter-spacing:1.4px;opacity:.85">OEE</span></div></div>
@@ -344,11 +378,11 @@
         </div>
       </div>
     </div>
-    <div class="strip-actions" style="grid-template-columns:repeat(4,1fr)">
-      <button class="sa" id="btnRun" onclick="setState('producing')"><span style="width:0;height:0;border-left:11px solid #7BF5A6;border-top:7px solid transparent;border-bottom:7px solid transparent"></span>Rodar Máquina</button>
-      <button class="sa" id="btnStop" onclick="onStopClick()"><span style="width:12px;height:12px;border-radius:3px;background:#E00303"></span>Parar Máquina</button>
+    <div class="strip-actions">
+      <button class="sa run" id="btnRun" onclick="setState('producing')"><span style="width:0;height:0;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent"></span>Rodar Máquina</button>
+      <button class="sa stopbtn" id="btnStop" onclick="onStopClick()"><span style="width:12px;height:12px;border-radius:3px;background:#fff"></span>Parar Máquina</button>
       <button class="sa piece" onclick="addPiece()"><span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc1));color:#fff;display:inline-flex;align-items:center;justify-content:center;font:800 13px 'Segoe UI'">✓</span>Apontar Peça</button>
-      <button class="sa scrap" onclick="addScrap()"><span style="width:18px;height:18px;border-radius:5px;border:2px solid #FFB4B4;display:inline-flex;align-items:center;justify-content:center;font:800 11px 'Segoe UI';color:#FFB4B4">✕</span>Apontar Refugo</button>
+      <button class="sa scrap" onclick="addScrap()"><span style="width:16px;height:16px;border-radius:5px;border:2px solid #FF9E9E;display:inline-flex;align-items:center;justify-content:center;font:800 10px 'Segoe UI';color:#FF9E9E">✕</span>Refugo</button>
     </div>
   </section>
 
@@ -476,6 +510,14 @@
   </div>
 </div>
 
+<!-- ═══ DOWNTIME MODAL (balões de gibi) ═══ -->
+<div class="overlay" id="dtOverlay">
+  <div class="modal dt-modal">
+    <div class="modal-h"><h3>Paradas Registradas</h3><button class="x" onclick="closeOverlay('dtOverlay')">×</button></div>
+    <div class="modal-b" id="dtBody"></div>
+  </div>
+</div>
+
 <!-- ═══ INSPECTION MODAL ═══ -->
 <div class="overlay" id="inspOverlay">
   <div class="modal">
@@ -502,6 +544,7 @@
 const OPERATORS = { '1220':'Gustavo de Melo', '975':'Zaqueu', '1117':'Edson Pereira' };
 
 const STOP_REASONS = [
+  'Aguardando Início',
   'Aguardando inspeção / liberação','Troca ou quebra de ferramenta','Manutenção / quebra de máquina',
   'Falta de matéria-prima','Falta de programa NC / processo','Falta de dispositivo de fixação',
   'Aguardando preset de ferramenta','Ajuste dimensional (corrigindo cota)','Limpeza / remoção de cavaco',
@@ -520,7 +563,7 @@ const TOOLS = [
 const TOOLSPEC = Object.fromEntries(TOOLS.map(t=>[t.id,t.spec]));
 
 const BUDGETS = {
-  '137715':{ orcamento:'1377/15', op:25, cyclePlan:270,
+  '137715':{ orcamento:'1377/15', op:25, cyclePlan:270, lotePecas:12,
     pn:'390-14145-001', rev:'003', desc:'Suporte Fixação', client:'EMBRAER',
     setupTime:18, fixacao:'Zero-Point Lang + Morsa Lang', dispositivo:'LBD03598_DET01', pages:14,
     magazine:{1:'T01',2:'T03',3:'T05',5:'T08',6:'T11',8:'T02',9:'T14',10:'T07',12:'T09',14:'T16',15:'T04',17:'T25',18:'T12',20:'T06',22:'T27',24:'T30',26:'T10',28:'T17'},
@@ -530,7 +573,7 @@ const BUDGETS = {
       {lote:'Lote MAR/2025',stat:'80 peças · retrabalho',statCls:'warn',tipo:'tool',body:'Troca T03 (Fresa Ø12) por desgaste na peça 8/12. Aliviar 0.02mm no diâmetro para não forçar a entrada do furo.',who:'Zaqueu · MQ0281 · 27/03/2025'},
       {lote:'Lote NOV/2024',stat:'150 peças · refugo 1,3%',statCls:'red',tipo:'stop',body:'Parada por falta de matéria-prima (Al 7075 T6). Retomada após almoxarifado. Lote finalizado 12/12 aprovado.',who:'Edson Pereira · MQ0175 · 05/11/2024'}
     ]},
-  '004120':{ orcamento:'41/20', op:40, cyclePlan:520,
+  '004120':{ orcamento:'41/20', op:40, cyclePlan:520, lotePecas:8,
     pn:'196-61561-003QB10', rev:'005', desc:'Peça Estrutural 5 Eixos', client:'EMBRAER',
     setupTime:35, fixacao:'Dispositivo especial 5 eixos', dispositivo:'LBD02525_DET05', pages:32,
     magazine:{1:'T01',2:'T02',4:'T04',5:'T05',7:'T07',9:'T09',11:'T13',13:'T16',16:'T25',19:'T30'},
@@ -540,7 +583,7 @@ const BUDGETS = {
       {lote:'Lote JUN/2026',stat:'salva sem refugo',statCls:'ok',tipo:'stop',body:'Vibração no desbaste da cavidade (cota 120.00). Solução: profundidade 2→1.2mm e 8500 RPM.',who:'Gustavo de Melo · MQ0281 · 08/06/2026'},
       {lote:'Lote MAI/2026',stat:'atenção · peça única',statCls:'warn',tipo:'note',body:'Peça única, sem margem para refugo. Dispositivo 5 eixos precisa 15min para estabilizar. Grampos 35 N·m.',who:'Edson Pereira · MQ0281 · 10/05/2026'}
     ]},
-  '552515':{ orcamento:'5525/15', op:65, cyclePlan:330,
+  '552515':{ orcamento:'5525/15', op:65, cyclePlan:330, lotePecas:6,
     pn:'500-19063-005', rev:'002', desc:'Eixo Usinado', client:'EMBRAER',
     setupTime:22, fixacao:'Placa 3 castanhas moles + Contra-ponto', dispositivo:'LBD02340_DET01', pages:27,
     magazine:{1:'T01',3:'T05',5:'T08',7:'T13',9:'T16',11:'T25',13:'T27',15:'T30',18:'T02',21:'T07'},
@@ -570,8 +613,9 @@ function toolsOfBudget(orcKey){
 const S = {
   operatorMat:null, budget:null, orcKey:null,
   machineState:'stopped', stateStart:Date.now(),
-  pieces:0, scrap:0, cycleReal:0, cyclePlan:270,
-  stopReason:STOP_REASONS[0],
+  pieces:0, scrap:0, cycleReal:0, cyclePlan:270, lotePecas:0,
+  stopReason:'Aguardando Início',
+  downtime:0, stops:[], curStopStart:null,
   magazine:{}, page:1, totalPages:1,
   supDept:null, supCounts:{Engenharia:2,'Inspeção / Qualidade':0,'Manutenção':1},
   addl:[ {id:1,ini:'RG',name:'Rugosímetro Portátil',spec:'Ra 0,05–10 µm · nº 04-176 · Metrologia'},
@@ -624,6 +668,8 @@ function loadOP(){
   const b=BUDGETS[orc];
   if(!b){toast('Orçamento "'+orc+'" não encontrado','red');return;}
   S.budget=b; S.orcKey=orc; S.pieces=0; S.scrap=0; S.cycleReal=0; S.cyclePlan=b.cyclePlan;
+  S.lotePecas=b.lotePecas||0;
+  S.downtime=0; S.stops=[]; S.curStopStart=null; S.stopReason='Aguardando Início';
   S.page=1; S.totalPages=b.pages; S.magazine=Object.assign({},b.magazine);
   document.body.classList.remove('locked');
   $('hdOP').className='chip op'; $('hdOP').textContent='Orç. '+b.orcamento+' · OP '+b.op;
@@ -632,7 +678,7 @@ function loadOP(){
   $('pPdf').textContent='PROCESSO_'+b.orcamento.replace('/','')+'.pdf';
   $('pPath').textContent='\\\\server\\NC\\MQ0281\\'+b.orcamento.replace('/','')+'\\';
   $('fixDevice').textContent=b.fixacao; setDevPhoto(b.dispositivo);
-  $('batchSize').value=Math.max(b.op,2);
+  $('batchSize').value=Math.max(b.lotePecas||b.op,2);
   updatePage(); renderHistory(); renderMagazine(); renderAddl(); renderFset(); renderOps(); renderFreq();
   autoLoadPdf(orc);
   setState('stopped',true);
@@ -642,8 +688,11 @@ function loadOP(){
 /* ═══════════ MÁQUINA / TIMER ═══════════ */
 let timer=null;
 function setState(st,silent){
+  if(S.machineState==='stopped' && st!=='stopped') closeCurrentStop();
   S.machineState=st; S.stateStart=Date.now();
   if(st==='producing') S.cycleReal=0;
+  if(st==='stopped' && S.curStopStart==null) S.curStopStart=Date.now();
+  $('stReasonText').textContent=S.stopReason;
   const bs=$('btnSetup');
   if(st==='setup'){bs.style.background='linear-gradient(135deg,#FBB018,#E07C08)';bs.style.color='#fff';bs.style.borderColor='#E07C08';bs.innerHTML='<span style="width:12px;height:12px;border-radius:50%;background:#FFDD66"></span>Setup em andamento…';}
   else{bs.style.background='linear-gradient(135deg,#FFF8E8,#FEF3C7)';bs.style.color='#92600A';bs.style.borderColor='#F5C542';bs.innerHTML='<span style="width:12px;height:12px;border-radius:50%;background:#F59E0B"></span>Iniciar Setup';}
@@ -652,7 +701,7 @@ function setState(st,silent){
   const showReason=st==='stopped';
   $('stReasonWrap').style.display=showReason?'flex':'none';
   $('stReasonDiv').style.display=showReason?'block':'none';
-  applyStrip(); if(!silent&&st!=='stopped') toast(STATE_MAP[st].label,'blue');
+  applyStrip(); render(); if(!silent&&st!=='stopped') toast(STATE_MAP[st].label,'blue');
   if(!timer) timer=setInterval(tick,1000);
 }
 function onStopClick(){ if(S.machineState==='stopped'){setState('producing');return;} openStopModal(); }
@@ -669,8 +718,10 @@ function applyStrip(){
 function render(){
   const el=Math.floor((Date.now()-S.stateStart)/1000);
   $('stTimer').textContent=fmt(el);
-  $('mPieces').textContent=S.pieces; $('mScrap').textContent=S.scrap;
-  $('mCycle').textContent=mmss(S.cycleReal); $('mCyclePlan').textContent=mmss(S.cyclePlan);
+  $('mPieces').textContent=S.pieces+'/'+(S.lotePecas||0); $('mScrap').textContent=S.scrap;
+  $('mCycle').textContent=mmss(S.cycleReal);
+  const dt=S.downtime+(S.curStopStart!=null?Math.floor((Date.now()-S.curStopStart)/1000):0);
+  $('mDownTotal').textContent=fmt(dt);
   const prog=Math.min(100,Math.round((S.cycleReal/S.cyclePlan)*100));
   $('mCycleBar').style.width=prog+'%';
   $('mCycleBar').style.background=S.cycleReal>S.cyclePlan?'#FF8A8A':'rgba(255,255,255,.92)';
@@ -753,11 +804,45 @@ function openStopModal(){
   STOP_REASONS.forEach(r=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{selectStopReason(r);};box.appendChild(b);});
   $('stopOverlay').classList.add('show');
 }
-function selectStopReason(r){ S.stopReason=r; buildReasonSelect(); setState('stopped'); closeOverlay('stopOverlay'); toast('Parada: '+r,'red'); }
-function pickReason(v){ S.stopReason=v; }
-function buildReasonSelect(){
-  const sel=$('stReason'); sel.innerHTML='';
-  STOP_REASONS.forEach(r=>{const o=document.createElement('option');o.textContent=r;o.style.color='#1F2933';if(r===S.stopReason)o.selected=true;sel.appendChild(o);});
+function selectStopReason(r){ S.stopReason=r; setState('stopped'); closeOverlay('stopOverlay'); toast('Parada: '+r,'red'); }
+
+/* ═══════════ PARADAS / DOWNTIME ═══════════ */
+function closeCurrentStop(){
+  if(S.curStopStart==null) return;
+  const secs=Math.floor((Date.now()-S.curStopStart)/1000);
+  S.stops.push({reason:S.stopReason, seconds:secs, at:stampNow()});
+  S.downtime+=secs; S.curStopStart=null;
+}
+function stampNow(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function openDowntime(){ renderDowntime(); $('dtOverlay').classList.add('show'); }
+function renderDowntime(){
+  const box=$('dtBody'); box.innerHTML='';
+  const intro=document.createElement('div'); intro.className='dt-intro';
+  intro.textContent='Toque no motivo de cada parada para corrigir. As paradas acumulam por causa (relatório p/ PCP).';
+  box.appendChild(intro);
+  const items=[...S.stops.map((s,i)=>({...s,idx:i,live:false}))];
+  if(S.curStopStart!=null) items.push({reason:S.stopReason, seconds:Math.floor((Date.now()-S.curStopStart)/1000), at:'agora', idx:'current', live:true});
+  if(!items.length){ box.innerHTML+='<div class="empty-note">Nenhuma parada registrada ainda.</div>'; return; }
+  items.forEach(it=>{
+    const b=document.createElement('div'); b.className='dt-bubble'+(it.live?' live':'');
+    const opts=STOP_REASONS.map(r=>'<option'+(r===it.reason?' selected':'')+'>'+r+'</option>').join('');
+    b.innerHTML=
+      '<div class="dt-top"><span class="dt-dur tnum">'+fmt(it.seconds)+'</span>'+
+      '<span class="dt-badge">'+(it.live?'Em andamento':'Encerrada')+'</span>'+
+      '<span class="dt-when">'+(it.live?'em curso':'às '+it.at)+'</span></div>'+
+      '<div class="dt-mlabel">Motivo</div>'+
+      '<select onchange="changeStopReason(\''+it.idx+'\',this.value)">'+opts+'</select>';
+    box.appendChild(b);
+  });
+  const dt=S.downtime+(S.curStopStart!=null?Math.floor((Date.now()-S.curStopStart)/1000):0);
+  const tot=document.createElement('div'); tot.className='dt-total';
+  tot.innerHTML='<b>PARADA TOTAL</b><span class="n tnum">'+fmt(dt)+'</span>';
+  box.appendChild(tot);
+}
+function changeStopReason(idx,val){
+  if(idx==='current'){ S.stopReason=val; if(S.machineState==='stopped')$('stReasonText').textContent=val; }
+  else { const i=parseInt(idx); if(S.stops[i]) S.stops[i].reason=val; }
+  toast('Motivo atualizado','green');
 }
 
 /* ═══════════ SUPPORT ═══════════ */
@@ -978,7 +1063,7 @@ function openFullscreen(){
 function beep(){ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.1;o.start();setTimeout(()=>{o.stop();a.close();},220); }
 
 /* ═══════════ INIT ═══════════ */
-buildReasonSelect(); refreshSupCounts(); applyStrip(); render();
+refreshSupCounts(); applyStrip(); render();
 window.addEventListener('load',()=>$('matriculaInput').focus());
 </script>
 </body>
