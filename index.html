@@ -164,6 +164,7 @@
   .pill-ok{font:700 9.5px "Segoe UI";color:#15803D;background:#E7F8EE;border:1px solid #B7EBC8;padding:3px 8px;border-radius:7px;white-space:nowrap}
   .pill-warn{font:700 9.5px "Segoe UI";color:#B45309;background:#FEF3C7;border:1px solid #FADFA0;padding:3px 8px;border-radius:7px;white-space:nowrap}
   .pill-red{font:700 9.5px "Segoe UI";color:#DC2626;background:#FEECEC;border:1px solid #F7C4C4;padding:3px 8px;border-radius:7px;white-space:nowrap}
+  .pill-teal{font:700 9.5px "Segoe UI";color:#00697A;background:#E0F7FB;border:1px solid #A7E8F0;padding:3px 8px;border-radius:7px;white-space:nowrap}
   .sec-h{font:800 10px "Segoe UI";letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark);margin-bottom:6px}
   .sec-h.amber{color:#B45309}
   .devbtn{padding:7px 12px;border-radius:9px;border:1px solid var(--amber);background:#fff;color:#B45309;font:800 10.5px "Segoe UI";cursor:pointer}
@@ -202,6 +203,9 @@
   .fset:last-child{border-bottom:none}
   .fset .code{min-width:40px;height:26px;padding:0 7px;border-radius:7px;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font:800 12px "Segoe UI";display:inline-flex;align-items:center;justify-content:center}
   .fset .tx{flex:1}.fset .tx b{display:block;font:800 12.5px "Segoe UI"}.fset .tx span{display:block;font:600 10.5px "Segoe UI";color:var(--soft)}
+  .fset.reserved{background:#E9FAFD;border:1px solid #A7E8F0;border-radius:10px;padding:10px 11px;margin-bottom:6px}
+  .fset.reserved .code{background:linear-gradient(135deg,var(--acc2),var(--teal-dark))}
+  .fset.reserved .tx span{color:var(--teal-dark);font-weight:700}
 
   /* ═══ PRÓXIMOS SERVIÇOS ═══ */
   .ops{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
@@ -218,6 +222,8 @@
   .trow .nm{flex:1;font:700 11.5px "Segoe UI"}
   .trow.in-mag{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;margin:2px 0;padding:8px 6px}
   .trow.in-mag .code{background:linear-gradient(135deg,var(--green),#15803D)}
+  .trow.in-setor{background:#E9FAFD;border:1px solid #A7E8F0;border-radius:8px;margin:2px 0;padding:8px 6px}
+  .trow.in-setor .code{background:linear-gradient(135deg,var(--acc2),var(--teal-dark))}
   .devarea{border-top:1px dashed #E3ECF7;padding-top:12px}
   .devarea input{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--border);font:700 11.5px "Segoe UI";outline:none}
   .devarea input:focus{border-color:var(--acc1)}
@@ -544,9 +550,23 @@ const BUDGETS = {
     ]}
 };
 
+/* ═══════════ ORDENS DE SERVIÇO NA FILA ═══════════ */
+/* Cada serviço aponta para um orçamento real — ferramentas identificadas automaticamente */
+const SERVICES = [
+  {id:'svc0', orcKey:'137715', os:'1045567', pieces:7},
+  {id:'svc1', orcKey:'004120', os:'1045612', pieces:1},
+  {id:'svc2', orcKey:'552515', os:'1045703', pieces:8}
+];
+/* ferramentas do orçamento, na ordem dos slots do magazine, sem repetição */
+function toolsOfBudget(orcKey){
+  const mag=BUDGETS[orcKey].magazine, seen=[];
+  Object.keys(mag).map(Number).sort((a,b)=>a-b).forEach(slot=>{const c=mag[slot];if(!seen.includes(c))seen.push(c);});
+  return seen;
+}
+
 /* ═══════════ ESTADO ═══════════ */
 const S = {
-  operatorMat:null, budget:null,
+  operatorMat:null, budget:null, orcKey:null,
   machineState:'stopped', stateStart:Date.now(),
   pieces:0, scrap:0, cycleReal:0, cyclePlan:270,
   stopReason:STOP_REASONS[0],
@@ -554,17 +574,14 @@ const S = {
   supDept:null, supCounts:{Engenharia:2,'Inspeção / Qualidade':0,'Manutenção':1},
   addl:[ {id:1,ini:'RG',name:'Rugosímetro Portátil',spec:'Ra 0,05–10 µm · nº 04-176 · Metrologia'},
          {id:2,ini:'BL',name:'Bloco-Padrão Ø10 H7',spec:'Classe 1 · nº 04-233 · Metrologia'} ],
-  fset:[ {id:'s1',code:'T05',name:'Fresa topo Ø12 mm',motivo:'Retirada após término do serviço'},
-         {id:'s2',code:'T14',name:'Fresa topo Ø20 mm',motivo:'Retirada após término do serviço'},
-         {id:'s3',code:'T25',name:'Micro fresa Ø2 mm',motivo:'Aguardando devolução ao preset'} ],
-  ops:[
-    {id:'op1',next:true, op:'OP 108341 · Op. 30', pn:'S50-09057-011', rev:'B', desc:'Bucha Guia 011', pdf:'PROCESSO_108341.pdf', pages:'9 páginas', setup:'40 min', deviceStatus:'asking', deviceName:'',
-      tools:[{code:'T04',name:'Fresa topo Ø8 · 4 cortes',st:'mag'},{code:'T07',name:'Broca Ø8 HSS-Co',st:'mag'},{code:'T13',name:'Alargador Ø8 H7',st:'preset'},{code:'T21',name:'Bedame externo 3 mm',st:'solicitar'},{code:'T28',name:'Fresa de chanfro 45°',st:'mag'}]},
-    {id:'op2',next:false, op:'OP 108345 · Op. 20', pn:'S50-09061-004', rev:'A', desc:'Flange Ø60', pdf:'PROCESSO_108345.pdf', pages:'6 páginas', setup:'30 min', deviceStatus:'asking', deviceName:'',
-      tools:[{code:'T02',name:'Faceamento Ø63',st:'mag'},{code:'T09',name:'Fresa topo Ø4 mm',st:'mag'},{code:'T06',name:'Broca Ø5 mm',st:'preset'},{code:'T18',name:'Macho rosca M8',st:'solicitar'}]},
-    {id:'op3',next:false, op:'OP 108350 · Op. 15', pn:'S50-09070-002', rev:'C', desc:'Eixo Estriado', pdf:'PROCESSO_108350.pdf', pages:'11 páginas', setup:'55 min', deviceStatus:'asking', deviceName:'',
-      tools:[{code:'T01',name:'Faceamento topo',st:'mag'},{code:'T11',name:'Fresa topo Ø16 mm',st:'mag'},{code:'T16',name:'Fresa de estria',st:'preset'},{code:'T27',name:'Broca Ø10 mm',st:'mag'},{code:'T30',name:'Fresa de bola R3',st:'solicitar'},{code:'T22',name:'Bedame 4 mm',st:'mag'}]}
-  ]
+  fset:[ {id:'s1',code:'T05',name:'Fresa esférica Ø12',motivo:'Retirada após término do serviço'},
+         {id:'s2',code:'T13',name:'Broca helicoidal Ø6.8',motivo:'Retirada após término do serviço'},
+         {id:'s3',code:'T14',name:'Broca helicoidal Ø8',motivo:'Aguardando devolução ao preset'} ],
+  ops: SERVICES.map(s=>({
+    id:s.id, orcKey:s.orcKey, os:s.os, pieces:s.pieces,
+    deviceStatus:'asking', deviceName:'',
+    tools: toolsOfBudget(s.orcKey).map(c=>({code:c, name:TOOLSPEC[c]||c}))
+  }))
 };
 
 const STATE_MAP = {
@@ -604,7 +621,7 @@ function loadOP(){
   if(!orc){toast('Digite o número do orçamento/OP','blue');return;}
   const b=BUDGETS[orc];
   if(!b){toast('Orçamento "'+orc+'" não encontrado','red');return;}
-  S.budget=b; S.pieces=0; S.scrap=0; S.cycleReal=0; S.cyclePlan=b.cyclePlan;
+  S.budget=b; S.orcKey=orc; S.pieces=0; S.scrap=0; S.cycleReal=0; S.cyclePlan=b.cyclePlan;
   S.page=1; S.totalPages=b.pages; S.magazine=Object.assign({},b.magazine);
   document.body.classList.remove('locked');
   $('hdOP').className='chip op'; $('hdOP').textContent='Orç. '+b.orcamento+' · OP '+b.op;
@@ -788,12 +805,19 @@ function renderMagazine(){
   }
   $('magCount').textContent='Ocupados '+occ+' / 30';
 }
-function freeSlot(i){ delete S.magazine[i]; renderMagazine(); }
+function freeSlot(i){
+  const code=S.magazine[i]; delete S.magazine[i];
+  if(code && !S.fset.some(f=>f.code===code))
+    S.fset.push({id:'f'+Date.now(), code:code, name:(TOOLSPEC[code]||code), motivo:'Retirada do magazine'});
+  renderMagazine(); renderFset(); renderOps();
+}
 function assignSlot(i){
   const used=new Set(Object.values(S.magazine));
   const next=TOOLS.find(t=>!used.has(t.id));
   if(!next){toast('Todas as ferramentas já estão no magazine','amber');return;}
-  S.magazine[i]=next.id; renderMagazine();
+  S.magazine[i]=next.id;
+  S.fset=S.fset.filter(f=>f.code!==next.id);
+  renderMagazine(); renderFset(); renderOps();
 }
 
 /* ═══════════ INSTRUMENTOS / FERRAMENTAS SETOR ═══════════ */
@@ -811,15 +835,35 @@ function renderAddl(){
 }
 function renderFset(){
   const box=$('fsetList'); box.innerHTML='';
+  const queue=S.ops?S.ops.filter(op=>op.orcKey!==S.orcKey):[];
+  let reserved=0;
   $('fsetCount').textContent=S.fset.length+' retirada(s)';
   if(!S.fset.length){box.innerHTML='<div class="empty-note">Nenhuma ferramenta retirada no setor.</div>';return;}
   S.fset.forEach(f=>{
-    const d=document.createElement('div'); d.className='fset';
-    d.innerHTML='<span class="code">'+f.code+'</span><span class="tx"><b>'+f.name+'</b><span>'+f.motivo+'</span></span><span class="pill-warn">Aguardando recolher</span>';
+    const users=queue.filter(op=>op.tools.some(t=>t.code===f.code));
+    const d=document.createElement('div');
+    if(users.length){
+      reserved++; d.className='fset reserved';
+      const oss=users.map(u=>'OS '+u.os).join(' · ');
+      d.innerHTML='<span class="code">'+f.code+'</span><span class="tx"><b>'+f.name+'</b><span>Reservar para '+oss+'</span></span><span class="pill-teal">Reservada ↩</span>';
+    } else {
+      d.className='fset';
+      d.innerHTML='<span class="code">'+f.code+'</span><span class="tx"><b>'+f.name+'</b><span>'+f.motivo+'</span></span><span class="pill-warn">Aguardando recolher</span>';
+    }
     box.appendChild(d);
   });
+  if(reserved) $('fsetCount').textContent=S.fset.length+' retirada(s) · '+reserved+' reservada(s)';
 }
-function collectPreset(){ if(!S.fset.length){toast('Nenhuma ferramenta no setor','amber');return;} S.fset=[]; renderFset(); toast('Preset de recolher solicitado','amber'); }
+function collectPreset(){
+  if(!S.fset.length){toast('Nenhuma ferramenta no setor','amber');return;}
+  const queue=S.ops.filter(op=>op.orcKey!==S.orcKey);
+  const reservedCodes=new Set(); queue.forEach(op=>op.tools.forEach(t=>reservedCodes.add(t.code)));
+  const keep=S.fset.filter(f=>reservedCodes.has(f.code));
+  const collected=S.fset.length-keep.length;
+  S.fset=keep; renderFset(); renderOps();
+  if(collected) toast(collected+' recolhida(s); '+keep.length+' reservada(s) mantida(s) p/ próximos serviços','amber');
+  else toast('Todas reservadas p/ próximos serviços — nada recolhido','blue');
+}
 
 /* ═══════════ HANDOVER ═══════════ */
 function registerHandover(){ const v=$('hoInput').value.trim(); if(!v){toast('Escreva a passagem de turno','red');return;} $('hoInput').value=''; toast('Passagem de turno registrada','green'); }
@@ -829,31 +873,41 @@ let dragOp=null;
 function renderOps(){
   const g=$('opsGrid'); g.innerHTML='';
   const mounted=new Set(Object.values(S.magazine));
-  S.ops.forEach(op=>{
+  const sector=new Set(S.fset.map(f=>f.code));
+  const queue=S.ops.filter(op=>op.orcKey!==S.orcKey);
+  queue.forEach((op,qi)=>{
+    const b=BUDGETS[op.orcKey];
     const card=document.createElement('div'); card.className='opc';
-    let toolsHtml='';
+    let toolsHtml='', nMag=0, nSetor=0, nPreset=0;
     op.tools.forEach((t,ti)=>{
-      const inMag=mounted.has(t.code);
-      let pill=''; if(inMag)pill='<span class="pill-ok">No magazine ✓</span>'; else if(t.st==='preset')pill='<span class="pill-warn">Preset pendente</span>'; else pill='<span class="pill-red">Solicitar</span>';
-      toolsHtml+='<div class="trow'+(inMag?' in-mag':'')+'" data-op="'+op.id+'" data-i="'+ti+'"><span class="grip" draggable="true">⠿</span><span class="code">'+t.code+'</span><span class="nm">'+t.name+'</span>'+pill+'</div>';
+      let cls='', pill='';
+      if(mounted.has(t.code)){cls='in-mag';pill='<span class="pill-ok">No magazine ✓</span>';nMag++;}
+      else if(sector.has(t.code)){cls='in-setor';pill='<span class="pill-teal">Já no setor ↩</span>';nSetor++;}
+      else {pill='<span class="pill-warn">Solicitar preset</span>';nPreset++;}
+      toolsHtml+='<div class="trow'+(cls?' '+cls:'')+'" data-op="'+op.id+'" data-i="'+ti+'"><span class="grip" draggable="true">⠿</span><span class="code">'+t.code+'</span><span class="nm">'+t.name+'</span>'+pill+'</div>';
     });
+    const resumo='<div style="display:flex;gap:6px;flex-wrap:wrap;font:700 9px \'Segoe UI\'">'+
+      (nMag?'<span class="pill-ok">'+nMag+' no magazine</span>':'')+
+      (nSetor?'<span class="pill-teal">'+nSetor+' no setor</span>':'')+
+      (nPreset?'<span class="pill-warn">'+nPreset+' p/ preset</span>':'')+'</div>';
     let dev='';
     if(op.deviceStatus==='asking') dev='<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><span style="font:800 12px \'Segoe UI\'">Necessita dispositivo?</span><div style="margin-left:auto;display:flex;gap:7px"><button class="db y" onclick="setDev(\''+op.id+'\',\'pending\')">Sim</button><button class="db n" onclick="setDev(\''+op.id+'\',\'closed\')">Não</button></div></div>';
     else if(op.deviceStatus==='pending') dev='<div style="display:flex;flex-direction:column;gap:9px"><div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:#F59E0B;animation:pulse 1.9s infinite"></span><span style="font:800 11.5px \'Segoe UI\';color:#B45309">Dispositivo PENDENTE</span></div><input placeholder="Identificação (ex.: Morsa Lang)" value="'+op.deviceName+'" onchange="setDevName(\''+op.id+'\',this.value)"><button class="db ok" onclick="setDev(\''+op.id+'\',\'ok\')">OK — Dispositivo posicionado</button></div>';
     else if(op.deviceStatus==='ok') dev='<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;background:#E7F8EE;border:1px solid #B7EBC8"><span style="width:18px;height:18px;border-radius:50%;background:#1EBE5A;color:#fff;display:inline-flex;align-items:center;justify-content:center;font:800 11px \'Segoe UI\'">✓</span><span style="flex:1;font:800 11.5px \'Segoe UI\';color:#15803D">'+(op.deviceName||'Dispositivo confirmado')+'</span><button class="db n" style="padding:5px 9px" onclick="setDev(\''+op.id+'\',\'asking\')">Alterar</button></div>';
     else dev='<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;background:#F5F7FA;border:1px solid #EDF1F6"><span style="width:18px;height:18px;border-radius:50%;background:#B0B9C4;color:#fff;display:inline-flex;align-items:center;justify-content:center;font:800 11px \'Segoe UI\'">—</span><span style="flex:1;font:700 11.5px \'Segoe UI\';color:#6B7785">Não necessita dispositivo</span><button class="db n" style="padding:5px 9px" onclick="setDev(\''+op.id+'\',\'asking\')">Reabrir</button></div>';
     card.innerHTML=
-      '<div class="oh"><span class="b4"></span><span class="t">'+op.op+'</span>'+(op.next?'<span class="next">Próximo</span>':'')+'</div>'+
+      '<div class="oh"><span class="b4"></span><span class="t">OS '+op.os+' · '+op.pieces+' Peça'+(op.pieces>1?'s':'')+'</span>'+(qi===0?'<span class="next">Próximo</span>':'')+'</div>'+
       '<div class="ob">'+
-        '<div class="kv"><div><div class="k">PN</div><div class="v" style="font-size:12.5px">'+op.pn+'</div></div><div><div class="k">Rev</div><div class="v" style="font-size:12.5px">'+op.rev+'</div></div><div><div class="k">Descrição</div><div class="v" style="font-size:12.5px">'+op.desc+'</div></div></div>'+
-        '<div class="pdfbox interactive mini" id="opPdfBox_'+op.id+'" onclick="document.getElementById(\'opPdfIn_'+op.id+'\').click()" ondrop="dropPdf(event,\''+op.id+'\')" ondragover="event.preventDefault();this.classList.add(\'dragover-pdf\')" ondragleave="this.classList.remove(\'dragover-pdf\')"><iframe id="opPdfFrame_'+op.id+'" style="display:none"></iframe><div id="opPdfPh_'+op.id+'" style="display:flex;flex-direction:column;align-items:center;gap:5px"><div class="f" style="font-size:11.5px">'+op.pdf+'</div><div class="p" style="font-size:10px">'+op.pages+' · clique ou arraste PDF</div></div><input type="file" id="opPdfIn_'+op.id+'" accept=".pdf" style="display:none" onchange="loadPdfFile(this.files[0],\''+op.id+'\')"></div>'+
-        '<div style="display:flex;align-items:center;gap:9px"><button class="pdfnav-b" style="padding:8px 13px;border-radius:9px;border:1px solid var(--border);background:#fff;font:700 11.5px \'Segoe UI\';color:var(--acc1);cursor:pointer" onclick="document.getElementById(\'opPdfIn_'+op.id+'\').click()">Carregar PDF</button><span class="pill-warn" style="margin-left:auto">Setup '+op.setup+'</span></div>'+
-        '<div style="font:800 9.5px \'Segoe UI\';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Ferramentas</div>'+
+        '<div class="kv"><div><div class="k">Orçamento</div><div class="v" style="font-size:12.5px">'+b.orcamento+'</div></div><div><div class="k">Rev</div><div class="v" style="font-size:12.5px">'+b.rev+'</div></div><div><div class="k">Descrição</div><div class="v" style="font-size:12.5px">'+b.desc+'</div></div></div>'+
+        '<div class="pdfbox loaded mini" id="opPdfBox_'+op.id+'"><iframe id="opPdfFrame_'+op.id+'" src="pdfs/'+op.orcKey+'.pdf#page=1&view=FitH"></iframe></div>'+
+        '<div style="display:flex;align-items:center;gap:9px"><span style="font:600 10px \'Segoe UI\';color:var(--faint)">PROCESSO_'+op.orcKey+'.pdf</span><span class="pill-warn" style="margin-left:auto">Setup '+b.setupTime+' min</span></div>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font:800 9.5px \'Segoe UI\';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Ferramentas ('+op.tools.length+')</span>'+resumo+'</div>'+
         '<div class="tlist" data-op="'+op.id+'">'+toolsHtml+'</div>'+
         '<div class="devarea">'+dev+'</div>'+
       '</div>';
     g.appendChild(card);
   });
+  if(!queue.length) g.innerHTML='<div class="empty-note">Nenhum serviço na fila.</div>';
   bindToolDrag();
 }
 function bindToolDrag(){
