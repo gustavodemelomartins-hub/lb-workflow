@@ -134,10 +134,24 @@
   .pdfnav button{padding:9px 15px;border-radius:9px;border:1px solid var(--border);background:#fff;font:700 12px "Segoe UI";color:var(--acc1);cursor:pointer}
   .pdfnav button:hover{background:#F1F6FF}
   .pdfnav .path{margin-left:auto;font:600 11px ui-monospace,Menlo,monospace;color:var(--faint)}
+  .pdfbox.interactive{cursor:pointer;transition:all .15s;position:relative}
+  .pdfbox.interactive:hover{border-color:var(--acc1);background:linear-gradient(45deg,#EEF2F6,#E8F0FC)}
+  .pdfbox.dragover-pdf{border-color:var(--acc1)!important;background:#E3F2FD!important;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+  .pdfbox iframe,.pdfbox embed{width:100%;height:100%;border:none;border-radius:11px}
+  .pdfbox .pdf-select{padding:8px 18px;border-radius:9px;border:1px solid var(--acc1);background:#fff;color:var(--acc1);font:700 12px "Segoe UI";cursor:pointer;margin-top:8px;display:inline-flex;align-items:center;gap:6px}
+  .pdfbox .pdf-select:hover{background:#F1F6FF}
+  .pdfbox.loaded{background:#fff;border-style:solid;border-color:var(--border);cursor:default}
+  .pdfbox.mini{height:160px}
+  .pdfbox.mini.loaded{height:280px}
 
   .hentry{padding:12px 13px;border-radius:11px;background:#F5F9FE;border:1px solid #E3ECF7;border-left:4px solid var(--acc1)}
-  .hentry.eng{border-left-color:var(--acc1)}.hentry.tool{border-left-color:#00838F}.hentry.stop{border-left-color:var(--red)}.hentry.note{border-left-color:var(--green)}
+  .hentry.eng{border-left-color:var(--acc1)}.hentry.tool{border-left-color:var(--amber)}.hentry.stop{border-left-color:var(--red)}.hentry.note{border-left-color:var(--acc2)}
   .hentry .top{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+  .hentry .cat{font:800 9px "Segoe UI";letter-spacing:1.2px;text-transform:uppercase;padding:3px 8px;border-radius:6px;display:inline-block}
+  .hentry.eng .cat{color:var(--accD);background:#E6EFFB}
+  .hentry.tool .cat{color:#92400E;background:#FEF3C7}
+  .hentry.stop .cat{color:#991B1B;background:#FEE2E2}
+  .hentry.note .cat{color:#065F6C;background:#E6F7FA}
   .hentry .lote{font:800 11px "Segoe UI";color:var(--accD);background:#E6EFFB;padding:3px 8px;border-radius:6px}
   .hentry .body{font:700 12.5px "Segoe UI";line-height:1.5}
   .hentry .who{font:600 10.5px "Segoe UI";color:var(--faint);margin-top:4px}
@@ -202,6 +216,8 @@
   .trow.dragover{background:#F1F6FF}
   .trow .code{min-width:38px;height:24px;padding:0 6px;border-radius:7px;background:linear-gradient(135deg,var(--acc1),var(--accD));color:#fff;font:800 11.5px "Segoe UI";display:inline-flex;align-items:center;justify-content:center}
   .trow .nm{flex:1;font:700 11.5px "Segoe UI"}
+  .trow.in-mag{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;margin:2px 0;padding:8px 6px}
+  .trow.in-mag .code{background:linear-gradient(135deg,var(--green),#15803D)}
   .devarea{border-top:1px dashed #E3ECF7;padding-top:12px}
   .devarea input{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--border);font:700 11.5px "Segoe UI";outline:none}
   .devarea input:focus{border-color:var(--acc1)}
@@ -351,10 +367,19 @@
             <div><div class="k">Revisão</div><div class="v" id="pRev">—</div></div>
             <div><div class="k">Descrição</div><div class="v" id="pDesc">—</div></div>
           </div>
-          <div class="pdfbox" style="height:300px"><div class="f" id="pPdf">PROCESSO.pdf</div><div class="p" id="pPage">visualização do PDF · página 1 / 1</div></div>
+          <div class="pdfbox interactive" id="pdfViewer" style="height:400px" onclick="$('pdfInput').click()" ondrop="dropPdf(event,'main')" ondragover="event.preventDefault();this.classList.add('dragover-pdf')" ondragleave="this.classList.remove('dragover-pdf')">
+            <iframe id="pdfFrame" style="display:none"></iframe>
+            <div id="pdfPlaceholder" style="display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div class="f" id="pPdf">PROCESSO.pdf</div>
+              <div class="p" id="pPage">Arraste o PDF aqui ou clique para selecionar</div>
+              <button class="pdf-select" onclick="event.stopPropagation();$('pdfInput').click()">Selecionar PDF</button>
+            </div>
+            <input type="file" id="pdfInput" accept=".pdf" style="display:none" onchange="loadPdfFile(this.files[0],'main')">
+          </div>
           <div class="pdfnav">
             <button onclick="changePage(-1)">‹ Anterior</button>
             <button onclick="changePage(1)">Próxima ›</button>
+            <button onclick="$('pdfInput').click()" style="background:linear-gradient(135deg,var(--acc1),var(--accD));color:#fff;border:none;padding:9px 15px;border-radius:9px;font:700 12px 'Segoe UI';cursor:pointer">Carregar PDF</button>
             <span class="path" id="pPath">\\server\NC\MQ0281\</span>
           </div>
         </div>
@@ -367,6 +392,19 @@
     </div>
 
     <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- SETUP / ANOTAÇÕES -->
+      <section class="card">
+        <div class="card-h"><span class="bar5"></span><h3>Setup Atual e Anotações</h3></div>
+        <div class="card-b">
+          <div class="dev-box"><span class="av">DF</span><div style="flex:1"><div style="font:700 9.5px 'Segoe UI';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Dispositivo em uso</div><div style="font:800 16px 'Segoe UI';color:var(--accD)" id="fixDevice">—</div></div><span class="pill-ok">Posicionado</span></div>
+          <div class="twobox"><div><div class="k">Zero-peça</div><div class="v">Face traseira</div></div><div><div class="k">Setup planejado</div><div class="v" id="setupPlan">—</div></div></div>
+          <div style="border-top:1px dashed #E3ECF7;padding-top:13px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="width:9px;height:9px;border-radius:50%;background:#F59E0B"></span><span style="font:800 11px 'Segoe UI';letter-spacing:1.2px;text-transform:uppercase;color:#B45309">Passagem de Turno</span></div>
+            <div class="handover"><div class="b">Máquina liberada após ajuste da Morsa Lang. Conferir paralelismo da face 45,00 a cada 20 peças. Deixei 3 peças na bancada para inspeção.</div><div class="who">João Ribeiro · turno noite · encerrado 06:00</div></div>
+            <div class="ho-row"><input id="hoInput" placeholder="Escrever passagem de turno…"><button onclick="registerHandover()">Registrar</button></div>
+          </div>
+        </div>
+      </section>
       <!-- INSTRUMENTOS -->
       <section class="card">
         <div class="card-h"><span class="bar5"></span><h3>Instrumentos no Setor</h3><button class="mini-btn right" onclick="toast('Solicitação de instrumento enviada à Metrologia.','blue')"><span style="font-size:14px">+</span>Solicitar</button></div>
@@ -384,19 +422,6 @@
           </div>
         </div>
       </section>
-      <!-- SETUP / ANOTAÇÕES -->
-      <section class="card">
-        <div class="card-h"><span class="bar5"></span><h3>Setup Atual e Anotações</h3></div>
-        <div class="card-b">
-          <div class="dev-box"><span class="av">DF</span><div style="flex:1"><div style="font:700 9.5px 'Segoe UI';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Dispositivo em uso</div><div style="font:800 16px 'Segoe UI';color:var(--accD)" id="fixDevice">—</div></div><span class="pill-ok">Posicionado</span></div>
-          <div class="twobox"><div><div class="k">Zero-peça</div><div class="v">Face traseira</div></div><div><div class="k">Setup planejado</div><div class="v" id="setupPlan">—</div></div></div>
-          <div style="border-top:1px dashed #E3ECF7;padding-top:13px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="width:9px;height:9px;border-radius:50%;background:#F59E0B"></span><span style="font:800 11px 'Segoe UI';letter-spacing:1.2px;text-transform:uppercase;color:#B45309">Passagem de Turno</span></div>
-            <div class="handover"><div class="b">Máquina liberada após ajuste da Morsa Lang. Conferir paralelismo da face 45,00 a cada 20 peças. Deixei 3 peças na bancada para inspeção.</div><div class="who">João Ribeiro · turno noite · encerrado 06:00</div></div>
-            <div class="ho-row"><input id="hoInput" placeholder="Escrever passagem de turno…"><button onclick="registerHandover()">Registrar</button></div>
-          </div>
-        </div>
-      </section>
     </div>
   </div>
 
@@ -408,6 +433,12 @@
     </div>
   </section>
 
+  <!-- PRÓXIMOS SERVIÇOS -->
+  <section class="card">
+    <div class="card-h"><span class="bar5"></span><h3>Próximos Serviços</h3><span class="right" style="font:700 11px 'Segoe UI';color:var(--soft);background:#F1F4F8;padding:5px 11px;border-radius:8px">Arraste ⠿ para reordenar as ferramentas</span></div>
+    <div class="card-b"><div class="ops" id="opsGrid"></div></div>
+  </section>
+
   <!-- FERRAMENTAS NO SETOR -->
   <section class="card">
     <div class="card-h"><span class="bar5 amber"></span><h3>Ferramentas no Setor</h3><span class="pill-warn" id="fsetCount">0 retirada(s)</span><button class="mini-btn amber right" onclick="collectPreset()">↩ Solicitar Preset de Recolher</button></div>
@@ -415,12 +446,6 @@
       <div style="font:600 10.5px 'Segoe UI';color:var(--faint)">Ferramentas retiradas do magazine após o término do serviço — aguardando recolhimento pelo preset.</div>
       <div id="fsetList"></div>
     </div>
-  </section>
-
-  <!-- PRÓXIMOS SERVIÇOS -->
-  <section class="card">
-    <div class="card-h"><span class="bar5"></span><h3>Próximos Serviços</h3><span class="right" style="font:700 11px 'Segoe UI';color:var(--soft);background:#F1F4F8;padding:5px 11px;border-radius:8px">Arraste ⠿ para reordenar as ferramentas</span></div>
-    <div class="card-b"><div class="ops" id="opsGrid"></div></div>
   </section>
 </main>
 
@@ -646,8 +671,43 @@ function addPiece(){
   renderFreq();
 }
 function addScrap(){ if(!S.budget)return; S.scrap++; render(); toast('Refugo apontado','amber'); }
-function changePage(d){ S.page=Math.max(1,Math.min(S.totalPages,S.page+d)); updatePage(); }
-function updatePage(){ $('pPage').textContent='visualização do PDF · página '+S.page+' / '+S.totalPages; }
+function changePage(d){ S.page=Math.max(1,Math.min(S.totalPages,S.page+d)); updatePage(); if(pdfBlobUrl){$('pdfFrame').src=pdfBlobUrl+'#page='+S.page;} }
+function updatePage(){ $('pPage').textContent=(pdfBlobUrl?'página ':'visualização do PDF · página ')+S.page+' / '+S.totalPages; }
+
+/* ═══════════ PDF VIEWER ═══════════ */
+let pdfBlobUrl=null;
+const opPdfUrls={};
+function loadPdfFile(file,target){
+  if(!file||file.type!=='application/pdf'){toast('Selecione um arquivo PDF','red');return;}
+  const url=URL.createObjectURL(file);
+  if(target==='main'){
+    if(pdfBlobUrl)URL.revokeObjectURL(pdfBlobUrl);
+    pdfBlobUrl=url; S.page=1;
+    const frame=$('pdfFrame'); frame.src=url; frame.style.display='block';
+    $('pdfPlaceholder').style.display='none';
+    $('pdfViewer').classList.add('loaded'); $('pdfViewer').onclick=null;
+    $('pPdf').textContent=file.name; updatePage();
+    toast('PDF carregado: '+file.name,'green');
+  } else {
+    const frame=document.getElementById('opPdfFrame_'+target);
+    const ph=document.getElementById('opPdfPh_'+target);
+    const box=document.getElementById('opPdfBox_'+target);
+    if(frame&&ph&&box){
+      if(opPdfUrls[target])URL.revokeObjectURL(opPdfUrls[target]);
+      opPdfUrls[target]=url;
+      frame.src=url; frame.style.display='block'; ph.style.display='none';
+      box.classList.add('loaded'); box.classList.remove('interactive');
+      box.onclick=null;
+      toast('PDF carregado: '+file.name,'green');
+    }
+  }
+}
+function dropPdf(e,target){
+  e.preventDefault(); e.stopPropagation();
+  e.currentTarget.classList.remove('dragover-pdf');
+  const file=e.dataTransfer.files[0];
+  loadPdfFile(file,target);
+}
 
 /* ═══════════ STOP MODAL ═══════════ */
 function openStopModal(){
@@ -675,6 +735,7 @@ function refreshSupCounts(){
 }
 
 /* ═══════════ HISTÓRICO ═══════════ */
+const CAT_MAP={eng:'ENGENHARIA',tool:'FERRAMENTAS',stop:'PARADA',note:'ANOTAÇÃO'};
 function renderHistory(){
   const b=S.budget, box=$('histBody'); box.innerHTML='';
   $('hCount').textContent=b.historico.length+' registros';
@@ -682,8 +743,9 @@ function renderHistory(){
   intro.textContent='Registros mais importantes das últimas vezes que esta peça foi usinada.'; box.appendChild(intro);
   b.historico.forEach(h=>{
     const d=document.createElement('div'); d.className='hentry '+h.tipo;
-    const scls=h.statCls==='ok'?'#15803D':h.statCls==='warn'?'#B45309':'#DC2626';
-    d.innerHTML='<div class="top"><span class="lote">'+h.lote+'</span><span style="font:700 11px \'Segoe UI\';color:'+scls+'">'+h.stat+'</span></div><div class="body">'+h.body+'</div><div class="who">'+h.who+'</div>';
+    const statPill=h.statCls==='ok'?'pill-ok':h.statCls==='warn'?'pill-warn':'pill-red';
+    const catLabel=CAT_MAP[h.tipo]||'NOTA';
+    d.innerHTML='<div class="top"><span class="cat">'+catLabel+'</span><span class="lote">'+h.lote+'</span><span class="'+statPill+'">'+h.stat+'</span></div><div class="body">'+h.body+'</div><div class="who">'+h.who+'</div>';
     box.appendChild(d);
   });
 }
@@ -749,12 +811,14 @@ function registerHandover(){ const v=$('hoInput').value.trim(); if(!v){toast('Es
 let dragOp=null;
 function renderOps(){
   const g=$('opsGrid'); g.innerHTML='';
+  const mounted=new Set(Object.values(S.magazine));
   S.ops.forEach(op=>{
     const card=document.createElement('div'); card.className='opc';
     let toolsHtml='';
     op.tools.forEach((t,ti)=>{
-      let pill=''; if(t.st==='mag')pill='<span class="pill-ok">No magazine</span>'; else if(t.st==='preset')pill='<span class="pill-warn">Preset pendente</span>'; else pill='<span class="pill-red">Solicitar</span>';
-      toolsHtml+='<div class="trow" data-op="'+op.id+'" data-i="'+ti+'"><span class="grip" draggable="true">⠿</span><span class="code">'+t.code+'</span><span class="nm">'+t.name+'</span>'+pill+'</div>';
+      const inMag=mounted.has(t.code);
+      let pill=''; if(inMag)pill='<span class="pill-ok">No magazine ✓</span>'; else if(t.st==='preset')pill='<span class="pill-warn">Preset pendente</span>'; else pill='<span class="pill-red">Solicitar</span>';
+      toolsHtml+='<div class="trow'+(inMag?' in-mag':'')+'" data-op="'+op.id+'" data-i="'+ti+'"><span class="grip" draggable="true">⠿</span><span class="code">'+t.code+'</span><span class="nm">'+t.name+'</span>'+pill+'</div>';
     });
     let dev='';
     if(op.deviceStatus==='asking') dev='<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><span style="font:800 12px \'Segoe UI\'">Necessita dispositivo?</span><div style="margin-left:auto;display:flex;gap:7px"><button class="db y" onclick="setDev(\''+op.id+'\',\'pending\')">Sim</button><button class="db n" onclick="setDev(\''+op.id+'\',\'closed\')">Não</button></div></div>';
@@ -765,8 +829,8 @@ function renderOps(){
       '<div class="oh"><span class="b4"></span><span class="t">'+op.op+'</span>'+(op.next?'<span class="next">Próximo</span>':'')+'</div>'+
       '<div class="ob">'+
         '<div class="kv"><div><div class="k">PN</div><div class="v" style="font-size:12.5px">'+op.pn+'</div></div><div><div class="k">Rev</div><div class="v" style="font-size:12.5px">'+op.rev+'</div></div><div><div class="k">Descrição</div><div class="v" style="font-size:12.5px">'+op.desc+'</div></div></div>'+
-        '<div class="pdfbox" style="height:130px"><div class="f" style="font-size:11.5px">'+op.pdf+'</div><div class="p" style="font-size:10px">'+op.pages+'</div></div>'+
-        '<div style="display:flex;align-items:center;gap:9px"><button class="pdfnav-b" style="padding:8px 13px;border-radius:9px;border:1px solid var(--border);background:#fff;font:700 11.5px \'Segoe UI\';color:var(--acc1);cursor:pointer" onclick="toast(\'Processo '+op.pn+' aberto\',\'blue\')">Abrir processo</button><span class="pill-warn" style="margin-left:auto">Setup '+op.setup+'</span></div>'+
+        '<div class="pdfbox interactive mini" id="opPdfBox_'+op.id+'" onclick="document.getElementById(\'opPdfIn_'+op.id+'\').click()" ondrop="dropPdf(event,\''+op.id+'\')" ondragover="event.preventDefault();this.classList.add(\'dragover-pdf\')" ondragleave="this.classList.remove(\'dragover-pdf\')"><iframe id="opPdfFrame_'+op.id+'" style="display:none"></iframe><div id="opPdfPh_'+op.id+'" style="display:flex;flex-direction:column;align-items:center;gap:5px"><div class="f" style="font-size:11.5px">'+op.pdf+'</div><div class="p" style="font-size:10px">'+op.pages+' · clique ou arraste PDF</div></div><input type="file" id="opPdfIn_'+op.id+'" accept=".pdf" style="display:none" onchange="loadPdfFile(this.files[0],\''+op.id+'\')"></div>'+
+        '<div style="display:flex;align-items:center;gap:9px"><button class="pdfnav-b" style="padding:8px 13px;border-radius:9px;border:1px solid var(--border);background:#fff;font:700 11.5px \'Segoe UI\';color:var(--acc1);cursor:pointer" onclick="document.getElementById(\'opPdfIn_'+op.id+'\').click()">Carregar PDF</button><span class="pill-warn" style="margin-left:auto">Setup '+op.setup+'</span></div>'+
         '<div style="font:800 9.5px \'Segoe UI\';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Ferramentas</div>'+
         '<div class="tlist" data-op="'+op.id+'">'+toolsHtml+'</div>'+
         '<div class="devarea">'+dev+'</div>'+
