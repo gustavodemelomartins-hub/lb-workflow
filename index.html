@@ -171,10 +171,12 @@
 
   .dev-box{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;background:linear-gradient(135deg,#EAF2FE,#F2FBFC);border:1px solid #CFE0F5}
   .dev-box .av{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--acc2),var(--acc1));color:#fff;display:flex;align-items:center;justify-content:center;font:800 14px "Segoe UI";box-shadow:0 3px 8px rgba(0,180,200,.3)}
-  .twobox{display:flex;gap:10px}
-  .twobox>div{flex:1;padding:9px 12px;border-radius:10px;background:#F5F9FE;border:1px solid #E3ECF7}
-  .twobox .k{font:700 9px "Segoe UI";letter-spacing:1.2px;text-transform:uppercase;color:var(--faint)}
-  .twobox .v{font:800 12.5px "Segoe UI"}
+  .dev-photo-wrap{position:relative;border-radius:12px;border:1px solid var(--border);background:linear-gradient(180deg,#F5F9FE,#fff);overflow:hidden;min-height:120px;display:flex;align-items:center;justify-content:center}
+  .dev-photo{width:100%;max-height:260px;object-fit:contain;display:block}
+  .dev-photo-wrap.missing .dev-photo{display:none}
+  .dev-photo-wrap.missing::after{content:'Foto do dispositivo indisponível';font:600 11.5px "Segoe UI";color:var(--faint)}
+  .dev-photo-tag{position:absolute;left:10px;bottom:10px;font:800 10px ui-monospace,Menlo,monospace;color:#fff;background:rgba(8,48,107,.82);padding:4px 9px;border-radius:7px;letter-spacing:.5px}
+  .dev-photo-wrap.missing .dev-photo-tag{display:none}
   .handover{padding:12px 13px;border-radius:11px;background:#FFFBF2;border:1px solid #F5E4BE}
   .handover .b{font:700 12.5px "Segoe UI";line-height:1.5}
   .handover .who{font:600 10.5px "Segoe UI";color:#B4884A;margin-top:5px}
@@ -400,7 +402,10 @@
         <div class="card-b">
           <button class="sa" id="btnSetup" onclick="setState('setup')" style="width:100%;height:52px;border-radius:12px;border:2px solid #F5C542;background:linear-gradient(135deg,#FFF8E8,#FEF3C7);color:#92600A;font:800 14px 'Segoe UI';display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(245,158,11,.18)"><span style="width:12px;height:12px;border-radius:50%;background:#F59E0B"></span>Iniciar Setup</button>
           <div class="dev-box"><span class="av">DF</span><div style="flex:1"><div style="font:700 9.5px 'Segoe UI';letter-spacing:1.3px;text-transform:uppercase;color:var(--teal-dark)">Dispositivo em uso</div><div style="font:800 16px 'Segoe UI';color:var(--accD)" id="fixDevice">—</div></div><span class="pill-ok">Posicionado</span></div>
-          <div class="twobox"><div><div class="k">Zero-peça</div><div class="v">Face traseira</div></div><div><div class="k">Setup planejado</div><div class="v" id="setupPlan">—</div></div></div>
+          <div class="dev-photo-wrap" id="devPhotoWrap">
+            <img class="dev-photo" id="devPhoto" alt="Foto do dispositivo">
+            <span class="dev-photo-tag" id="devPhotoTag"></span>
+          </div>
           <div style="border-top:1px dashed #E3ECF7;padding-top:13px">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="width:9px;height:9px;border-radius:50%;background:#F59E0B"></span><span style="font:800 11px 'Segoe UI';letter-spacing:1.2px;text-transform:uppercase;color:#B45309">Passagem de Turno</span></div>
             <div class="handover"><div class="b">Máquina liberada após ajuste da Morsa Lang. Conferir paralelismo da face 45,00 a cada 20 peças. Deixei 3 peças na bancada para inspeção.</div><div class="who">João Ribeiro · turno noite · encerrado 06:00</div></div>
@@ -517,7 +522,7 @@ const TOOLSPEC = Object.fromEntries(TOOLS.map(t=>[t.id,t.spec]));
 const BUDGETS = {
   '137715':{ orcamento:'1377/15', op:25, cyclePlan:270,
     pn:'390-14145-001', rev:'003', desc:'Suporte Fixação', client:'EMBRAER',
-    setupTime:18, fixacao:'Zero-Point Lang + Morsa Lang', pages:14,
+    setupTime:18, fixacao:'Zero-Point Lang + Morsa Lang', dispositivo:'LBD03598_DET01', pages:14,
     magazine:{1:'T01',2:'T03',3:'T05',5:'T08',6:'T11',8:'T02',9:'T14',10:'T07',12:'T09',14:'T16',15:'T04',17:'T25',18:'T12',20:'T06',22:'T27',24:'T30',26:'T10',28:'T17'},
     cotas:[{id:'01',nom:'45.0 ±0.1',tol:'44.9 ~ 45.1',min:44.9,max:45.1},{id:'02',nom:'22.50 ±0.05',tol:'22.45 ~ 22.55',min:22.45,max:22.55},{id:'03',nom:'Ø12.0 H7',tol:'12.000 ~ 12.018',min:12.000,max:12.018},{id:'04',nom:'8.0 ±0.1',tol:'7.9 ~ 8.1',min:7.9,max:8.1},{id:'05',nom:'R3.0 ±0.5',tol:'2.5 ~ 3.5',min:2.5,max:3.5},{id:'06',nom:'30.0 ±0.15',tol:'29.85 ~ 30.15',min:29.85,max:30.15}],
     historico:[
@@ -527,7 +532,7 @@ const BUDGETS = {
     ]},
   '004120':{ orcamento:'41/20', op:40, cyclePlan:520,
     pn:'196-61561-003QB10', rev:'005', desc:'Peça Estrutural 5 Eixos', client:'EMBRAER',
-    setupTime:35, fixacao:'Dispositivo especial 5 eixos', pages:32,
+    setupTime:35, fixacao:'Dispositivo especial 5 eixos', dispositivo:'LBD02340_DET01', pages:32,
     magazine:{1:'T01',2:'T02',4:'T04',5:'T05',7:'T07',9:'T09',11:'T13',13:'T16',16:'T25',19:'T30'},
     cotas:[{id:'01',nom:'120.00 ±0.05',tol:'119.95 ~ 120.05',min:119.95,max:120.05},{id:'02',nom:'85.0 ±0.1',tol:'84.9 ~ 85.1',min:84.9,max:85.1},{id:'03',nom:'Ø25.0 H7',tol:'25.000 ~ 25.021',min:25.000,max:25.021},{id:'04',nom:'15.00 ±0.05',tol:'14.95 ~ 15.05',min:14.95,max:15.05},{id:'05',nom:'45.0° ±0.5°',tol:'44.5 ~ 45.5',min:44.5,max:45.5},{id:'06',nom:'R5.0 ±0.3',tol:'4.7 ~ 5.3',min:4.7,max:5.3},{id:'07',nom:'Ø8.0 H7',tol:'8.000 ~ 8.015',min:8.000,max:8.015},{id:'08',nom:'62.50 ±0.05',tol:'62.45 ~ 62.55',min:62.45,max:62.55}],
     historico:[
@@ -537,7 +542,7 @@ const BUDGETS = {
     ]},
   '552515':{ orcamento:'5525/15', op:65, cyclePlan:330,
     pn:'500-19063-005', rev:'002', desc:'Eixo Usinado', client:'EMBRAER',
-    setupTime:22, fixacao:'Placa 3 castanhas moles + Contra-ponto', pages:27,
+    setupTime:22, fixacao:'Placa 3 castanhas moles + Contra-ponto', dispositivo:'LBD02525_DET05', pages:27,
     magazine:{1:'T01',3:'T05',5:'T08',7:'T13',9:'T16',11:'T25',13:'T27',15:'T30',18:'T02',21:'T07'},
     cotas:[{id:'01',nom:'Ø50.0 h6',tol:'49.984 ~ 50.000',min:49.984,max:50.000},{id:'02',nom:'30.0 ±0.1',tol:'29.9 ~ 30.1',min:29.9,max:30.1},{id:'03',nom:'Ø18.0 H7',tol:'18.000 ~ 18.018',min:18.000,max:18.018},{id:'04',nom:'10.00 ±0.05',tol:'9.95 ~ 10.05',min:9.95,max:10.05},{id:'05',nom:'R2.0 ±0.3',tol:'1.7 ~ 2.3',min:1.7,max:2.3},{id:'06',nom:'75.0 ±0.1',tol:'74.9 ~ 75.1',min:74.9,max:75.1},{id:'07',nom:'Ø12.0 H7',tol:'12.000 ~ 12.018',min:12.000,max:12.018}],
     historico:[
@@ -626,7 +631,7 @@ function loadOP(){
   $('pPN').textContent=b.pn; $('pRev').textContent=b.rev; $('pDesc').textContent=b.desc;
   $('pPdf').textContent='PROCESSO_'+b.orcamento.replace('/','')+'.pdf';
   $('pPath').textContent='\\\\server\\NC\\MQ0281\\'+b.orcamento.replace('/','')+'\\';
-  $('fixDevice').textContent=b.fixacao; $('setupPlan').textContent=b.setupTime+' min';
+  $('fixDevice').textContent=b.fixacao; setDevPhoto(b.dispositivo);
   $('batchSize').value=Math.max(b.op,2);
   updatePage(); renderHistory(); renderMagazine(); renderAddl(); renderFset(); renderOps(); renderFreq();
   autoLoadPdf(orc);
@@ -861,6 +866,15 @@ function collectPreset(){
   S.fset=keep; renderFset(); renderOps();
   if(collected) toast(collected+' recolhida(s); '+keep.length+' reservada(s) mantida(s) p/ próximos serviços','amber');
   else toast('Todas reservadas p/ próximos serviços — nada recolhido','blue');
+}
+
+/* ═══════════ FOTO DO DISPOSITIVO ═══════════ */
+function setDevPhoto(code){
+  const wrap=$('devPhotoWrap'), img=$('devPhoto'), tag=$('devPhotoTag');
+  if(!code){ wrap.classList.add('missing'); tag.textContent=''; return; }
+  wrap.classList.remove('missing'); tag.textContent=code;
+  img.onerror=()=>{ wrap.classList.add('missing'); };
+  img.src='dispositivos/'+code+'.png';
 }
 
 /* ═══════════ HANDOVER ═══════════ */
