@@ -615,6 +615,7 @@ function loadOP(){
   $('fixDevice').textContent=b.fixacao; $('setupPlan').textContent=b.setupTime+' min';
   $('batchSize').value=Math.max(b.op,2);
   updatePage(); renderHistory(); renderMagazine(); renderAddl(); renderFset(); renderOps(); renderFreq();
+  autoLoadPdf(orc);
   setState('stopped',true);
   toast('Trabalho '+b.orcamento+' carregado','green');
 }
@@ -671,18 +672,34 @@ function addPiece(){
   renderFreq();
 }
 function addScrap(){ if(!S.budget)return; S.scrap++; render(); toast('Refugo apontado','amber'); }
-function changePage(d){ S.page=Math.max(1,Math.min(S.totalPages,S.page+d)); updatePage(); if(pdfBlobUrl){$('pdfFrame').src=pdfBlobUrl+'#page='+S.page;} }
-function updatePage(){ $('pPage').textContent=(pdfBlobUrl?'página ':'visualização do PDF · página ')+S.page+' / '+S.totalPages; }
+function changePage(d){ if(!pdfCurrentSrc)return; S.page=Math.max(1,Math.min(S.totalPages,S.page+d)); updatePage(); $('pdfFrame').src=pdfCurrentSrc+'#page='+S.page+'&view=FitH'; }
+function updatePage(){ $('pPage').textContent=(pdfCurrentSrc?'página ':'visualização do PDF · página ')+S.page+' / '+S.totalPages; }
 
 /* ═══════════ PDF VIEWER ═══════════ */
+let pdfCurrentSrc=null;
 let pdfBlobUrl=null;
 const opPdfUrls={};
+
+/* carrega automaticamente pdfs/[orcamento].pdf ao abrir a OP */
+function autoLoadPdf(orc){
+  const src='pdfs/'+orc+'.pdf';
+  showPdf(src,orc);
+}
+function showPdf(src,label){
+  if(pdfBlobUrl){URL.revokeObjectURL(pdfBlobUrl);pdfBlobUrl=null;}
+  pdfCurrentSrc=src; S.page=1;
+  const frame=$('pdfFrame'); frame.src=src+'#page=1&view=FitH'; frame.style.display='block';
+  $('pdfPlaceholder').style.display='none';
+  const box=$('pdfViewer'); box.classList.add('loaded'); box.classList.remove('interactive'); box.onclick=null;
+  if(label)$('pPdf').textContent='PROCESSO_'+String(label).replace('/','')+'.pdf';
+  updatePage();
+}
 function loadPdfFile(file,target){
   if(!file||file.type!=='application/pdf'){toast('Selecione um arquivo PDF','red');return;}
   const url=URL.createObjectURL(file);
   if(target==='main'){
     if(pdfBlobUrl)URL.revokeObjectURL(pdfBlobUrl);
-    pdfBlobUrl=url; S.page=1;
+    pdfBlobUrl=url; pdfCurrentSrc=url; S.page=1;
     const frame=$('pdfFrame'); frame.src=url; frame.style.display='block';
     $('pdfPlaceholder').style.display='none';
     $('pdfViewer').classList.add('loaded'); $('pdfViewer').onclick=null;
