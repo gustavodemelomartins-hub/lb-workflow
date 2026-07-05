@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(git status)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(npm run*)",
+      "Bash(npm install*)",
+      "Bash(npm test*)",
+      "Bash(npx*)",
+      "Bash(node *)",
+      "Bash(python -m http.server*)",
+      "Bash(ls*)",
+      "Bash(mkdir*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)"
+    ]
+  }
+}

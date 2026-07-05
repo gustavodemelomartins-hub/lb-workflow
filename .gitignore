@@ -1,9 +1,19 @@
-﻿setup_github.ps1
+# ── Scripts locais de setup/push (contêm credenciais — NÃO versionar) ──
+setup_github.ps1
 push_to_github.ps1
 run_setup.bat
 run_setup_log.bat
 setup_log.txt
-.claude/
+
+# ── Dependências e build ──
+node_modules/
+dist/
+apps/web/dist/
+
+# ── Config local do Claude Code (agentes e skills SÃO versionados) ──
+.claude/settings.local.json
+
+# ── Sistema operacional / temporários ──
 Thumbs.db
 .DS_Store
 desktop.ini
