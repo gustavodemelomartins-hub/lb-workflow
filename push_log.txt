@@ -1,0 +1,21 @@
+========================================
+   Lima e Bonfa WorkFlow - Git Push     
+========================================
+[1/4] .gitignore criado
+[2/4] Repositorio git ja inicializado
+[3/4] Remote configurado
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+[4/4] Nenhuma mudanca nova para commitar
+Fazendo push...
+Push OK!
+GitHub Pages ativado!
+
+========================================
+            CONCLUIDO!                  
+========================================
+
+  Repositorio : https://github.com/gustavodemelomartins-hub/lb-workflow
+  GitHub Pages: https://gustavodemelomartins-hub.github.io/lb-workflow/
+
+  (Pages leva 1-2 min para ficar online)
+
