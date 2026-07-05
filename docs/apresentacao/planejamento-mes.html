@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lima &amp; Bonfá — Planejamento MES</title>
+</head>
+<body>
+<title>Lima & Bonfá WorkFlow MES — Planejamento</title>
+<style>
+  :root{
+    --blue:#1565C0; --blue-700:#0F4C93; --teal:#00B4C8; --graphite:#4A4A4A;
+    --ok:#22C55E; --warn:#F59E0B; --stop:#EF4444;
+    --bg:#EDF2F8; --surface:#FFFFFF; --surface-2:#F6F9FC;
+    --ink:#0E1B2A; --muted:#54687C; --line:#D7E1ED;
+    --navy:#0E2A4A; --navy-ink:#EAF2FB;
+    --grad:linear-gradient(120deg,#00B4C8 0%,#1565C0 100%);
+    --shadow:0 1px 2px rgba(16,34,54,.06),0 10px 28px rgba(16,34,54,.07);
+    --font-sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:"Cascadia Code","Cascadia Mono",Consolas,ui-monospace,Menlo,monospace;
+    --maxw:1000px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#09111B; --surface:#111E2D; --surface-2:#0D1826;
+      --ink:#E8F0F8; --muted:#93A6BA; --line:#213241;
+      --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#EDF2F8; --surface:#FFFFFF; --surface-2:#F6F9FC;
+    --ink:#0E1B2A; --muted:#54687C; --line:#D7E1ED;
+    --shadow:0 1px 2px rgba(16,34,54,.06),0 10px 28px rgba(16,34,54,.07);
+  }
+  :root[data-theme="dark"]{
+    --bg:#09111B; --surface:#111E2D; --surface-2:#0D1826;
+    --ink:#E8F0F8; --muted:#93A6BA; --line:#213241;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-sans); line-height:1.6;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  section{padding:56px 0; border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  h1,h2,h3{text-wrap:balance; margin:0; letter-spacing:-.02em; line-height:1.12}
+  p{margin:0}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--teal); font-weight:600;
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .eyebrow::before{content:""; width:26px; height:2px; background:var(--grad); border-radius:2px}
+  .lead{color:var(--muted); font-size:clamp(16px,2.4vw,19px); max-width:64ch}
+
+  /* ---------- HEADER BAND ---------- */
+  .band{
+    background:
+      linear-gradient(0deg,rgba(0,0,0,.12),rgba(0,0,0,.12)),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 40px),
+      repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 40px),
+      var(--navy);
+    color:var(--navy-ink); border-top:0;
+    border-bottom:4px solid transparent;
+    border-image:var(--grad) 1;
+  }
+  .band .wrap{padding-top:38px; padding-bottom:44px}
+  .brandrow{display:flex; align-items:center; gap:14px; margin-bottom:30px}
+  .mono-badge{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:#BFD6EA; border:1px solid rgba(255,255,255,.22);
+    padding:5px 10px; border-radius:999px; margin-left:auto;
+  }
+  .wordmark{display:flex; flex-direction:column; line-height:1.05}
+  .wordmark b{font-size:17px; letter-spacing:.01em; color:#fff; font-weight:700}
+  .wordmark span{font-size:12px; color:#AFC7DD; letter-spacing:.03em}
+  .band h1{color:#fff; font-size:clamp(30px,5.4vw,52px); font-weight:800; max-width:18ch}
+  .band .subtitle{color:#C6DBEE; font-size:clamp(16px,2.4vw,20px); margin-top:18px; max-width:60ch}
+  .metaline{
+    display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:26px;
+    font-family:var(--font-mono); font-size:12.5px; color:#9FBAD3;
+  }
+  .metaline b{color:#DCE9F5; font-weight:600}
+
+  /* ---------- GENERIC BLOCKS ---------- */
+  .grid{display:grid; gap:16px}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-4{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:20px; box-shadow:var(--shadow);
+  }
+  .card h3{font-size:16px; margin-bottom:6px}
+  .card p{color:var(--muted); font-size:14.5px}
+  .tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--blue); background:rgba(21,101,192,.09);
+    border:1px solid rgba(21,101,192,.18); padding:3px 8px; border-radius:6px;
+    display:inline-block;
+  }
+  :root[data-theme="dark"] .tag,
+  @media (prefers-color-scheme:dark){}
+  .sectitle{font-size:clamp(24px,3.6vw,34px); font-weight:800; margin-bottom:14px}
+
+  /* problem / value */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start}
+  .stack{display:flex; flex-direction:column; gap:12px}
+  .row-item{display:flex; gap:12px; align-items:flex-start}
+  .dot{flex:0 0 auto; width:9px; height:9px; border-radius:50%; margin-top:8px}
+  .dot.red{background:var(--stop)} .dot.teal{background:var(--teal)}
+  .row-item p{font-size:15px} .row-item b{color:var(--ink)}
+
+  /* machine hub */
+  .hub{background:var(--surface-2); border:1px solid var(--line); border-radius:18px; padding:28px}
+  .machine-node{
+    text-align:center; padding:22px; border-radius:14px; color:#fff;
+    background:var(--navy);
+    border:1px solid rgba(255,255,255,.08); position:relative; overflow:hidden;
+  }
+  .machine-node::after{
+    content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 22px);
+    pointer-events:none;
+  }
+  .machine-node .k{font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; color:var(--teal); text-transform:uppercase}
+  .machine-node .v{font-size:26px; font-weight:800; margin-top:4px}
+  .machine-node .s{font-size:13px; color:#B9D0E5; margin-top:6px}
+  .emits{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:18px}
+  .emit{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; font-size:14px; display:flex; align-items:center; gap:10px;
+  }
+  .emit b{font-weight:600}
+  .emit .bar{width:4px; align-self:stretch; border-radius:4px; background:var(--grad)}
+
+  /* architecture organogram */
+  .tree-root{
+    text-align:center; margin-bottom:8px;
+  }
+  .node-root{
+    display:inline-block; background:var(--grad); color:#fff; font-weight:700;
+    padding:12px 22px; border-radius:12px; font-size:16px; box-shadow:var(--shadow);
+  }
+  .node-root small{display:block; font-family:var(--font-mono); font-weight:500; font-size:11.5px; color:#EAF6FA; letter-spacing:.05em; opacity:.9}
+  .branches{display:grid; grid-template-columns:2fr 2fr 1.4fr; gap:16px; margin-top:18px}
+  .branch{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow)}
+  .branch-h{display:flex; align-items:baseline; gap:8px; margin-bottom:4px}
+  .branch-h b{font-size:15.5px}
+  .branch-h .p{font-family:var(--font-mono); font-size:12px; color:var(--muted)}
+  .branch .note{font-size:13px; color:var(--muted); margin-bottom:12px}
+  .grouplbl{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin:12px 0 8px}
+  .chips{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{
+    font-size:13px; padding:5px 10px; border-radius:8px; background:var(--surface-2);
+    border:1px solid var(--line); color:var(--ink); font-weight:500;
+  }
+  .chip.star{border-color:var(--blue); background:rgba(21,101,192,.10); color:var(--blue); font-weight:700}
+  .treecode{
+    margin-top:20px; background:var(--navy); color:#D6E6F5; border-radius:12px;
+    padding:18px 20px; overflow-x:auto; font-family:var(--font-mono);
+    font-size:13px; line-height:1.75; border:1px solid rgba(255,255,255,.08);
+  }
+  .treecode .c1{color:#6FE0EE} .treecode .c2{color:#F2B663} .treecode .cm{color:#7E9AB4}
+
+  /* panels */
+  .panel{position:relative; overflow:hidden}
+  .panel .num{position:absolute; top:14px; right:16px; font-family:var(--font-mono); font-size:12px; color:var(--muted)}
+  .panel .tag{margin-bottom:10px}
+
+  /* agents */
+  .org-top{display:flex; justify-content:center}
+  .agent-lead{
+    background:var(--navy); color:#fff; border-radius:14px; padding:18px 24px; text-align:center;
+    box-shadow:var(--shadow); max-width:360px; border:1px solid rgba(255,255,255,.08);
+  }
+  .agent-lead b{font-size:16px} .agent-lead .role{font-size:13px; color:#B9D0E5}
+  .agent-lead .mono{font-family:var(--font-mono); font-size:11.5px; color:var(--teal); letter-spacing:.06em}
+  .connect{display:flex; justify-content:center; align-items:center; gap:8px; color:var(--muted); font-family:var(--font-mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; padding:12px 0}
+  .connect::before,.connect::after{content:""; height:1px; width:44px; background:var(--line)}
+  .flow{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:22px; justify-content:center}
+  .flow .step{font-family:var(--font-mono); font-size:12.5px; background:var(--surface-2); border:1px solid var(--line); padding:6px 12px; border-radius:8px}
+  .flow .arr{color:var(--teal); font-weight:700}
+
+  /* decisions table */
+  .table-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px}
+  table{border-collapse:collapse; width:100%; min-width:520px; background:var(--surface)}
+  th,td{text-align:left; padding:13px 16px; font-size:14.5px; border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:0}
+  th{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:var(--surface-2)}
+  td b{font-weight:600}
+  td .why{color:var(--muted); font-size:13.5px}
+
+  /* roadmap */
+  .phase{display:grid; grid-template-columns:180px 1fr; gap:20px; padding:18px 0; border-top:1px solid var(--line)}
+  .phase:first-child{border-top:0}
+  .phase .pk{display:flex; flex-direction:column; gap:8px}
+  .phase .ptag{font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; color:var(--blue); font-weight:600}
+  .status{font-size:11.5px; font-family:var(--font-mono); letter-spacing:.06em; text-transform:uppercase; padding:4px 9px; border-radius:999px; width:max-content; font-weight:600}
+  .status.now{background:rgba(0,180,200,.14); color:#0a8090; border:1px solid rgba(0,180,200,.4)}
+  .status.next{background:rgba(21,101,192,.12); color:var(--blue); border:1px solid rgba(21,101,192,.32)}
+  .status.plan{background:var(--surface-2); color:var(--muted); border:1px solid var(--line)}
+  :root[data-theme="dark"] .status.now{color:#5fd8e6}
+  .phase h3{font-size:17px; margin-bottom:6px}
+  .phase p{color:var(--muted); font-size:14.5px}
+
+  /* recommendation callout */
+  .callout{
+    background:var(--surface); border:1px solid var(--line); border-left:5px solid var(--teal);
+    border-radius:14px; padding:26px 28px; box-shadow:var(--shadow);
+  }
+  .callout h2{font-size:clamp(21px,3vw,27px); font-weight:800; margin-bottom:12px}
+  .callout .badge{background:var(--grad); color:#fff; font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; padding:5px 11px; border-radius:999px; font-weight:600}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px}
+  .lane{border:1px solid var(--line); border-radius:12px; padding:16px; background:var(--surface-2)}
+  .lane .h{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+  .lane .h b{font-size:15px}
+  .lane ul{margin:0; padding-left:18px; color:var(--muted); font-size:14px}
+  .lane li{margin:5px 0}
+  .lane.now-lane{border-color:var(--teal); background:rgba(0,180,200,.06)}
+
+  .next{margin-top:20px; display:flex; gap:12px; align-items:flex-start}
+  .next .n{flex:0 0 auto; width:26px; height:26px; border-radius:50%; background:var(--grad); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:14px}
+  .next p{font-size:15px}
+
+  footer{padding:34px 0 60px; color:var(--muted); font-family:var(--font-mono); font-size:12.5px}
+  footer .wrap{display:flex; flex-wrap:wrap; gap:6px 20px; justify-content:space-between}
+
+  a{color:var(--blue)} :root[data-theme="dark"] a{color:#5aa9f0}
+  :focus-visible{outline:2px solid var(--teal); outline-offset:2px; border-radius:4px}
+
+  @media (max-width:820px){
+    .cols-4{grid-template-columns:repeat(2,1fr)}
+    .cols-3{grid-template-columns:repeat(2,1fr)}
+    .branches{grid-template-columns:1fr}
+    .split,.two{grid-template-columns:1fr}
+    .emits{grid-template-columns:repeat(2,1fr)}
+    .phase{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    .cols-4,.cols-3,.cols-2{grid-template-columns:1fr}
+    .emits{grid-template-columns:1fr}
+  }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="brandrow">
+      <svg width="42" height="42" viewBox="0 0 42 42" aria-label="Logotipo Lima e Bonfá" role="img">
+        <defs><linearGradient id="lb" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#00B4C8"/><stop offset="1" stop-color="#1565C0"/>
+        </linearGradient></defs>
+        <rect x="1" y="1" width="40" height="40" rx="11" fill="url(#lb)"/>
+        <text x="21" y="28" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="19" font-weight="800" fill="#fff">LB</text>
+      </svg>
+      <span class="wordmark"><b>Lima &amp; Bonfá</b><span>WorkFlow MES</span></span>
+      <span class="mono-badge">Relatório v0 · confidencial</span>
+    </div>
+    <h1>O centro operacional digital da fábrica</h1>
+    <p class="subtitle">Planejamento do esqueleto, organograma da arquitetura e do time — o mapa completo antes da primeira linha de código.</p>
+    <div class="metaline">
+      <span>Cliente <b>Embraer</b></span>
+      <span>Parque <b>~22 máquinas</b></span>
+      <span>Piloto <b>Mazak MQ0280 / MQ0281</b></span>
+      <span>Data <b>04/07/2026</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- VISÃO / PROBLEMA -->
+  <section id="visao">
+    <div class="wrap">
+      <div class="eyebrow">Sumário executivo</div>
+      <h2 class="sectitle">Hoje a fábrica funciona no papel e na memória. O MES a coloca em tempo real.</h2>
+      <p class="lead">Um sistema único, rodando nos PCs que já existem em cada posto, que transforma cada máquina em uma fonte viva de informação — do processo de usinagem ao tempo real de cada peça, com rastreabilidade total para as auditorias Embraer.</p>
+
+      <div class="split" style="margin-top:30px">
+        <div>
+          <div class="grouplbl">O problema hoje</div>
+          <div class="stack">
+            <div class="row-item"><span class="dot red"></span><p><b>Operadores perdidos</b> procurando programas em pastas de rede.</p></div>
+            <div class="row-item"><span class="dot red"></span><p><b>Inspeção em papel</b> — risco de perda e sem rastreabilidade para o cliente.</p></div>
+            <div class="row-item"><span class="dot red"></span><p><b>Sem tempo real</b> de setup e ciclo — o PCP só enxerga o tempo padrão, nunca o real.</p></div>
+            <div class="row-item"><span class="dot red"></span><p><b>Setores isolados</b> — engenharia, qualidade, preset e manutenção sem canal digital.</p></div>
+          </div>
+        </div>
+        <div>
+          <div class="grouplbl">O que o sistema entrega</div>
+          <div class="stack">
+            <div class="row-item"><span class="dot teal"></span><p><b>Rastreabilidade completa</b> — cada inspeção, tempo e troca de ferramenta fica registrada.</p></div>
+            <div class="row-item"><span class="dot teal"></span><p><b>Eficiência visível</b> — tempo real de máquina e motivos de parada para o PCP.</p></div>
+            <div class="row-item"><span class="dot teal"></span><p><b>Chão de fábrica conectado</b> — suporte entre setores com um clique, tudo com histórico.</p></div>
+            <div class="row-item"><span class="dot teal"></span><p><b>Escala</b> — nasce nas Mazak e cresce para as ~22 máquinas do parque.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÁQUINA NO CENTRO -->
+  <section id="maquina">
+    <div class="wrap">
+      <div class="eyebrow">Conceito-âncora</div>
+      <h2 class="sectitle">Tudo gira em torno da máquina</h2>
+      <p class="lead">Cada computador pertence permanentemente a uma máquina. Toda a informação da fábrica parte dela — e é isso que estrutura o sistema inteiro.</p>
+      <div class="hub" style="margin-top:26px">
+        <div class="machine-node">
+          <div class="k">Posto · Kiosk</div>
+          <div class="v">MQ0281</div>
+          <div class="s">Mazak Variaxis · Centro de Usinagem 5 Eixos</div>
+        </div>
+        <div class="emits">
+          <div class="emit"><span class="bar"></span><b>Operador logado</b></div>
+          <div class="emit"><span class="bar"></span><b>Ordem de serviço</b></div>
+          <div class="emit"><span class="bar"></span><b>Status &amp; tempos</b></div>
+          <div class="emit"><span class="bar"></span><b>Ferramentas (magazine)</b></div>
+          <div class="emit"><span class="bar"></span><b>Instrumentos &amp; inspeção</b></div>
+          <div class="emit"><span class="bar"></span><b>Dispositivos</b></div>
+          <div class="emit"><span class="bar"></span><b>Histórico</b></div>
+          <div class="emit"><span class="bar"></span><b>Comunicação &amp; chamados</b></div>
+          <div class="emit"><span class="bar"></span><b>Indicadores (OEE)</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORGANOGRAMA DA ARQUITETURA -->
+  <section id="esqueleto">
+    <div class="wrap">
+      <div class="eyebrow">Organograma · Esqueleto do sistema</div>
+      <h2 class="sectitle">Um só projeto, fronteiras claras (modular monolith)</h2>
+      <p class="lead">O sistema é um "monólito modular": um único aplicativo para instalar e manter, mas dividido em módulos independentes por domínio — simples de operar hoje, pronto para escalar amanhã.</p>
+
+      <div style="margin-top:28px">
+        <div class="tree-root">
+          <span class="node-root">Lima &amp; Bonfá WorkFlow MES <small>monorepo · Nx</small></span>
+        </div>
+        <div class="branches">
+          <div class="branch">
+            <div class="branch-h"><b>apps/api</b><span class="p">NestJS · Prisma</span></div>
+            <div class="note">O cérebro: regras, dados e tempo real.</div>
+            <div class="grouplbl">Núcleo</div>
+            <div class="chips">
+              <span class="chip star">machines</span><span class="chip">auth</span>
+              <span class="chip">orders</span><span class="chip">people</span>
+              <span class="chip">realtime</span><span class="chip">notifications</span>
+            </div>
+            <div class="grouplbl">Domínio</div>
+            <div class="chips">
+              <span class="chip">production</span><span class="chip">tooling</span>
+              <span class="chip">inspection</span><span class="chip">engineering</span>
+              <span class="chip">quality</span><span class="chip">devices</span>
+              <span class="chip">maintenance</span><span class="chip">analytics</span>
+            </div>
+          </div>
+          <div class="branch">
+            <div class="branch-h"><b>apps/web</b><span class="p">Vite · React</span></div>
+            <div class="note">A cara do sistema: um painel por setor.</div>
+            <div class="grouplbl">Painéis (features)</div>
+            <div class="chips">
+              <span class="chip">operador</span><span class="chip">engenharia</span>
+              <span class="chip">qualidade</span><span class="chip">preset</span>
+              <span class="chip">dispositivos</span><span class="chip">manutenção</span>
+              <span class="chip">gerência</span>
+            </div>
+          </div>
+          <div class="branch">
+            <div class="branch-h"><b>packages/shared</b></div>
+            <div class="note">Contratos de dados (Zod) que o back e o front usam — uma verdade só, zero divergência.</div>
+            <div class="grouplbl">Compartilhado</div>
+            <div class="chips">
+              <span class="chip">contratos</span><span class="chip">tipos</span><span class="chip">enums</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="treecode" aria-label="Estrutura de pastas do projeto">
+<span class="cm"># estrutura de pastas</span>
+Lima-e-Bonfa-Workflow/
+├── apps/
+│   ├── <span class="c1">api/</span>        <span class="cm">NestJS + Prisma (núcleo + domínio)</span>
+│   └── <span class="c1">web/</span>        <span class="cm">Vite + React (um painel por setor)</span>
+├── packages/
+│   └── <span class="c2">shared/</span>     <span class="cm">contratos Zod (back ↔ front)</span>
+├── prototype/     <span class="cm">protótipo HTML (referência de UX)</span>
+└── docs/adr/      <span class="cm">decisões de arquitetura registradas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAINÉIS -->
+  <section id="paineis">
+    <div class="wrap">
+      <div class="eyebrow">O que o sistema faz</div>
+      <h2 class="sectitle">Sete painéis, um centro operacional</h2>
+      <div class="grid cols-3" style="margin-top:24px">
+        <div class="card panel"><span class="num">01</span><span class="tag">Chão de fábrica</span><h3>Operador</h3><p>Login por chapa, ordem de serviço, processo em PDF, magazine virtual, inspeção volante e apontamento de tempo real de cada peça.</p></div>
+        <div class="card panel"><span class="num">02</span><span class="tag">Suporte</span><h3>Engenharia</h3><p>Recebe solicitações das máquinas, atribui a programadores e mantém o chat e o histórico por peça para futuras produções.</p></div>
+        <div class="card panel"><span class="num">03</span><span class="tag">Suporte</span><h3>Qualidade</h3><p>Solicitações de inspeção, montagem de instrumentos específicos e registro histórico de todas as medições.</p></div>
+        <div class="card panel"><span class="num">04</span><span class="tag">Preset</span><h3>Preset de ferramentas</h3><p>Mapa da fábrica, magazine virtual, fila de preparação, vida útil e rastreio de toda troca por quebra, desgaste ou ajuste.</p></div>
+        <div class="card panel"><span class="num">05</span><span class="tag">Ativos</span><h3>Dispositivos</h3><p>Dispositivo de cada máquina, próximos necessários, itens em manutenção e disponibilidade em tempo real.</p></div>
+        <div class="card panel"><span class="num">06</span><span class="tag">Ativos</span><h3>Manutenção</h3><p>Chamados, preventivas e corretivas, calendário, prioridades e máquinas indisponíveis.</p></div>
+        <div class="card panel"><span class="num">07</span><span class="tag">Gestão</span><h3>Gerência</h3><p>Dashboard executivo: mapa da fábrica, status em tempo real, OEE, disponibilidade, performance e relatórios.</p></div>
+        <div class="card panel" style="display:flex;flex-direction:column;justify-content:center;background:var(--surface-2)"><span class="tag" style="margin-bottom:8px">Base</span><h3>Comunicação integrada</h3><p>Todo painel conversa com os outros: solicitação → notificação → responsável → tempo de atendimento → histórico.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIME DE AGENTES -->
+  <section id="time">
+    <div class="wrap">
+      <div class="eyebrow">Organograma · Time de desenvolvimento</div>
+      <h2 class="sectitle">Cinco agentes de IA, um método de engenharia</h2>
+      <p class="lead">O desenvolvimento é conduzido por Gustavo (matrícula 1220) com um time de agentes especializados de Claude Code — cada um com um papel, ferramentas próprias e responsabilidade única.</p>
+
+      <div class="org-top" style="margin-top:26px">
+        <div class="agent-lead">
+          <div class="mono">arquiteto-mes</div>
+          <b>Arquiteto / Tech Lead</b>
+          <div class="role">Decide a arquitetura, questiona, registra as decisões. Não escreve código.</div>
+        </div>
+      </div>
+      <div class="connect">delega e revisa</div>
+      <div class="grid cols-4">
+        <div class="card"><div class="tag" style="margin-bottom:8px">back</div><h3>backend-nestjs</h3><p>Módulos, banco de dados, regras e APIs. Testa primeiro (TDD).</p></div>
+        <div class="card"><div class="tag" style="margin-bottom:8px">front</div><h3>frontend-react</h3><p>Telas e painéis na identidade Lima &amp; Bonfá, com acessibilidade de fábrica.</p></div>
+        <div class="card"><div class="tag" style="margin-bottom:8px">qa</div><h3>qa-verificador</h3><p>Revisor independente. Roda os testes e valida — só aprova ou reprova.</p></div>
+        <div class="card"><div class="tag" style="margin-bottom:8px">git · docs</div><h3>release-docs</h3><p>Commits, publicação no Git e documentação sempre atualizada.</p></div>
+      </div>
+
+      <div class="flow">
+        <span class="step">Sabatina</span><span class="arr">→</span>
+        <span class="step">PRD</span><span class="arr">→</span>
+        <span class="step">Issues (fatias verticais)</span><span class="arr">→</span>
+        <span class="step">TDD</span><span class="arr">→</span>
+        <span class="step">Revisão de UI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISÕES -->
+  <section id="decisoes">
+    <div class="wrap">
+      <div class="eyebrow">Decisões de arquitetura · ADR-0001</div>
+      <h2 class="sectitle">A stack, e por quê</h2>
+      <div class="table-wrap" style="margin-top:22px">
+        <table>
+          <thead><tr><th>Camada</th><th>Escolha</th><th>Motivo</th></tr></thead>
+          <tbody>
+            <tr><td><b>Monorepo</b></td><td>Nx</td><td class="why">Um repositório, fronteiras de módulo garantidas por ferramenta.</td></tr>
+            <tr><td><b>Backend</b></td><td>NestJS + Prisma + PostgreSQL</td><td class="why">Modular por natureza, tempo real nativo, banco central rastreável.</td></tr>
+            <tr><td><b>Frontend</b></td><td>Vite + React</td><td class="why">App interno em rede local, rápido, sem peso desnecessário.</td></tr>
+            <tr><td><b>Contrato</b></td><td>REST + Zod compartilhado</td><td class="why">Uma definição de dados só, validada nas duas pontas.</td></tr>
+            <tr><td><b>Tempo real</b></td><td>Socket.IO</td><td class="why">Status de máquina, chat e chamados atualizando ao vivo.</td></tr>
+            <tr><td><b>Estratégia</b></td><td>Greenfield</td><td class="why">Sistema novo do zero; o protótipo atual vira referência de UX.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="wrap">
+      <div class="eyebrow">Roadmap</div>
+      <h2 class="sectitle">Do protótipo de aprovação à fábrica inteira</h2>
+      <div style="margin-top:20px">
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase P</span><span class="status now">Agora</span></div>
+          <div><h3>Protótipo de aprovação</h3><p>Protótipo visual navegável para o dono aprovar o projeto — a visão completa na tela, sem infraestrutura de produção.</p></div>
+        </div>
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase 0</span><span class="status next">Após aprovar</span></div>
+          <div><h3>Fundação</h3><p>Monorepo, banco e o "tracer bullet": operador digita a chapa e o sistema responde com dados reais, ponta a ponta.</p></div>
+        </div>
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase 1</span><span class="status plan">Planejada</span></div>
+          <div><h3>Painel do Operador</h3><p>Processo, magazine, inspeção volante, suporte e apontamento de tempo — os cinco módulos do MVP.</p></div>
+        </div>
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase 2</span><span class="status plan">Planejada</span></div>
+          <div><h3>Setores de suporte</h3><p>Engenharia, Qualidade e Preset com chat e solicitações em tempo real.</p></div>
+        </div>
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase 3</span><span class="status plan">Planejada</span></div>
+          <div><h3>Ativos</h3><p>Dispositivos e Manutenção: disponibilidade, calendário, preventivas e corretivas.</p></div>
+        </div>
+        <div class="phase">
+          <div class="pk"><span class="ptag">Fase 4</span><span class="status plan">Planejada</span></div>
+          <div><h3>Gerência</h3><p>OEE, dashboard executivo, mapa da fábrica e indicadores em tempo real.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECOMENDAÇÃO -->
+  <section id="recomendacao">
+    <div class="wrap">
+      <div class="callout">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+          <span class="badge">Recomendação do arquiteto</span>
+        </div>
+        <h2>Para aprovar, protótipo primeiro — e sem desperdício</h2>
+        <p class="lead" style="max-width:70ch">O dono aprova pela visão e pela tela, não pela infraestrutura. Então a Fase P entrega um protótipo visual navegável (React com dados de exemplo) — impacto máximo, custo mínimo. E o melhor: ele <b>não é descartável</b>, vira o painel de produção depois, trocando só os dados de exemplo pela API real.</p>
+        <div class="two">
+          <div class="lane now-lane">
+            <div class="h"><span class="status now">Fase P · agora</span><b>Protótipo de aprovação</b></div>
+            <ul>
+              <li>Roda no navegador, sem banco nem Docker</li>
+              <li>Painel do operador completo + prévia dos 7 painéis</li>
+              <li>Identidade Lima &amp; Bonfá e dados reais da OP 108339</li>
+              <li>Pronto para demonstrar em qualquer PC</li>
+            </ul>
+          </div>
+          <div class="lane">
+            <div class="h"><span class="status next">depois</span><b>Fundação de produção</b></div>
+            <ul>
+              <li>NestJS + PostgreSQL + tempo real</li>
+              <li>Tracer bullet ponta a ponta</li>
+              <li>Módulos entrando fase a fase</li>
+              <li>Rastreabilidade e indicadores reais</li>
+            </ul>
+          </div>
+        </div>
+        <div class="next">
+          <span class="n">→</span>
+          <p><b>Próximo passo sugerido:</b> aprovar este planejamento e me liberar para construir a <b>Fase P</b> — o protótipo navegável em React que vai à mesa do dono.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Lima &amp; Bonfá WorkFlow MES · Relatório de planejamento v0</span>
+    <span>Gustavo de Melo (1220) + Claude Code · 04/07/2026</span>
+  </div>
+</footer>
+</body>
+</html>
